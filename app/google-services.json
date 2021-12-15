@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1083442149191",
+    "project_id": "liftin-182f4",
+    "storage_bucket": "liftin-182f4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1083442149191:android:ce0440ca47cc27c1317e62",
+        "android_client_info": {
+          "package_name": "xyz.joaophp.liftin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1083442149191-2e2e354fmsh8j5u59voh8mraest15cu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfJmcp-NafiIE7rpdeUi6PfTilSkFijUg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1083442149191-2e2e354fmsh8j5u59voh8mraest15cu7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
