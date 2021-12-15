@@ -1,42 +1,42 @@
 package xyz.joaophp.liftin.utils
 
-sealed class Either<L, R>(
-    private val left: L? = null,
-    private val right: R? = null,
+sealed class Either<E, S>(
+    private val error: E? = null,
+    private val success: S? = null,
 ) {
     abstract fun <B> fold(
-        ifLeft: (left: L) -> B,
-        ifRight: (right: R) -> B
+        ifError: (error: E) -> B,
+        ifSuccess: (success: S) -> B
     ): B
 
     abstract suspend fun <B> foldAsync(
-        ifLeft: suspend (left: L) -> B,
-        ifRight: suspend (right: R) -> B
+        ifError: suspend (error: E) -> B,
+        ifSuccess: suspend (success: S) -> B
     ): B
 }
 
-class Success<L, R>(private val value: R) : Either<L, R>(right = value) {
+class Success<E, S>(private val value: S) : Either<E, S>(success = value) {
 
     override fun <B> fold(
-        ifLeft: (left: L) -> B,
-        ifRight: (right: R) -> B
-    ) = ifRight(value)
+        ifError: (error: E) -> B,
+        ifSuccess: (success: S) -> B
+    ) = ifSuccess(value)
 
     override suspend fun <B> foldAsync(
-        ifLeft: suspend (left: L) -> B,
-        ifRight: suspend (right: R) -> B
-    ) = ifRight(value)
+        ifError: suspend (error: E) -> B,
+        ifSuccess: suspend (success: S) -> B
+    ) = ifSuccess(value)
 }
 
-class Error<L, R>(private val value: L) : Either<L, R>(left = value) {
+class Error<E, S>(private val value: E) : Either<E, S>(error = value) {
     override fun <B> fold(
-        ifLeft: (left: L) -> B,
-        ifRight: (right: R) -> B
-    ) = ifLeft(value)
+        ifError: (error: E) -> B,
+        ifSuccess: (success: S) -> B
+    ) = ifError(value)
 
     override suspend fun <B> foldAsync(
-        ifLeft: suspend (left: L) -> B,
-        ifRight: suspend (right: R) -> B
-    ) = ifLeft(value)
+        ifError: suspend (error: E) -> B,
+        ifSuccess: suspend (success: S) -> B
+    ) = ifError(value)
 }
 
