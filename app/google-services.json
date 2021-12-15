@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1083442149191-h6rnh13qbuupuejmeo2hjnoqrk4ilku5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "xyz.joaophp.liftin",
+            "certificate_hash": "6dd0703ffa7cda402e3824f0aeed9d1d83f76039"
+          }
+        },
+        {
           "client_id": "1083442149191-2e2e354fmsh8j5u59voh8mraest15cu7.apps.googleusercontent.com",
           "client_type": 3
         }

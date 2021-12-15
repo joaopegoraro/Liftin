@@ -38,12 +38,8 @@ class AuthServiceImpl(
     }
 
     private fun handleTask(task: Task<AuthResult>, cb: (Either<Failure, User>) -> Unit) {
-        if (task.isSuccessful) {
-            val user = firebaseAuth.currentUser ?: return cb(Error(UserNotFoundFailure()))
-            cb(Success(User(user.uid)))
-        } else {
-            cb(Error(SignInFailure()))
-        }
+        if (task.isSuccessful) cb(getCurrentUser())
+        else cb(Error(SignInFailure()))
     }
 
 

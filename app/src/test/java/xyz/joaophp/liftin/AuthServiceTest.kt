@@ -24,7 +24,6 @@ class AuthServiceTest {
     private lateinit var authService: AuthService
 
     // Mock Task
-    private val authResult = mockk<AuthResult>()
     private val slot = slot<OnCompleteListener<AuthResult>>()
     private val successTask = mockk<Task<AuthResult>>()
     private val failureTask = mockk<Task<AuthResult>>()
@@ -57,7 +56,6 @@ class AuthServiceTest {
     fun setUp() {
 
         // Set up successful task mock
-        every { successTask.result } returns authResult
         every { successTask.isSuccessful } returns true
         every { successTask.addOnCompleteListener(capture(slot)) } answers {
             slot.captured.onComplete(successTask)
@@ -65,7 +63,6 @@ class AuthServiceTest {
         }
 
         // Set up failed task mock
-        every { failureTask.result } returns authResult
         every { failureTask.isSuccessful } returns false
         every { failureTask.addOnCompleteListener(capture(slot)) } answers {
             slot.captured.onComplete(failureTask)
@@ -75,6 +72,7 @@ class AuthServiceTest {
         // Setup FirebaseAuth mock
         every { mockedFirebaseAuth.currentUser } returns mockedFirebaseUser
         every { mockedFirebaseUser.uid } returns userUid
+        every { mockedFirebaseAuth.signOut() } returns Unit
 
         authService = AuthServiceImpl(mockedFirebaseAuth)
     }
@@ -122,7 +120,6 @@ class AuthServiceTest {
         } returns successTask
 
         authService.signIn(email, password, authStateCallback)
-
         assert(authState == AuthState.SUCCESSFUL)
     }
 
@@ -133,7 +130,6 @@ class AuthServiceTest {
         } returns failureTask
 
         authService.signIn(email, password, authStateCallback)
-
         assert(authState == AuthState.FAILED)
     }
 
@@ -144,7 +140,6 @@ class AuthServiceTest {
         } returns failureTask
 
         authService.signInAnonymously(authStateCallback)
-
         assert(authState == AuthState.FAILED)
     }
 
@@ -155,31 +150,20 @@ class AuthServiceTest {
         } returns successTask
 
         authService.signInAnonymously(authStateCallback)
-
         assert(authState == AuthState.SUCCESSFUL)
     }
 
     @Test
     fun signOutFailure_test() {
-        every {
-            mockedFirebaseAuth.signOut()
-        } returns Unit
-
         val result = authService.signOut()
-
         assert(result is Error)
     }
 
     @Test
     fun signOutSuccess_test() {
-        every {
-            mockedFirebaseAuth.signOut()
-        } returns Unit
-
         every { mockedFirebaseAuth.currentUser } returns null
 
         val result = authService.signOut()
-
         assert(result is Success)
     }
 
