@@ -1,4 +1,4 @@
-package xyz.joaophp.liftin
+package xyz.joaophp.liftin.data.services
 
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
@@ -10,16 +10,14 @@ import io.mockk.mockk
 import io.mockk.slot
 import org.junit.Before
 import org.junit.Test
-import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.data.services.auth.AuthService
 import xyz.joaophp.liftin.data.services.auth.AuthServiceImpl
-import xyz.joaophp.liftin.utils.Either
+import xyz.joaophp.liftin.utils.AuthCallback
 import xyz.joaophp.liftin.utils.Error
-import xyz.joaophp.liftin.utils.Failure
 import xyz.joaophp.liftin.utils.Success
 
 
-class AuthServiceTest {
+class AuthServiceTest : BaseTest() {
 
     private lateinit var authService: AuthService
 
@@ -32,22 +30,12 @@ class AuthServiceTest {
     private val mockedFirebaseAuth = mockk<FirebaseAuth>()
     private val mockedFirebaseUser = mockk<FirebaseUser>()
 
-    // Helps with assertion
-    private var authState = AuthState.UNDEF
-    private val authStateCallback: (Either<Failure, User>) -> Unit = {
-        it.fold(
-            ifError = { authState = AuthState.FAILED },
-            ifSuccess = { authState = AuthState.SUCCESSFUL }
-        )
-    }
-
-    enum class AuthState {
-        SUCCESSFUL, FAILED, UNDEF
-    }
+    // MockCallback
+    private val mockedAuthCallback: AuthCallback = { it.mockFold() }
 
     // Constants
     companion object {
-        private const val userUid = "12345ABCDE"
+        private const val userUid = "12345ABIDE"
         private const val email = "cool@cool.com"
         private const val password = "123456"
     }
@@ -98,8 +86,8 @@ class AuthServiceTest {
         } returns failureTask
 
 
-        authService.register(email, password, authStateCallback)
-        assert(authState == AuthState.FAILED)
+        authService.register(email, password, mockedAuthCallback)
+        assert(testState == TestState.FAILED)
     }
 
     @Test
@@ -109,8 +97,8 @@ class AuthServiceTest {
         } returns successTask
 
 
-        authService.register(email, password, authStateCallback)
-        assert(authState == AuthState.SUCCESSFUL)
+        authService.register(email, password, mockedAuthCallback)
+        assert(testState == TestState.SUCCESSFUL)
     }
 
     @Test
@@ -119,8 +107,8 @@ class AuthServiceTest {
             mockedFirebaseAuth.signInWithEmailAndPassword(email, password)
         } returns successTask
 
-        authService.signIn(email, password, authStateCallback)
-        assert(authState == AuthState.SUCCESSFUL)
+        authService.signIn(email, password, mockedAuthCallback)
+        assert(testState == TestState.SUCCESSFUL)
     }
 
     @Test
@@ -129,8 +117,8 @@ class AuthServiceTest {
             mockedFirebaseAuth.signInWithEmailAndPassword(email, password)
         } returns failureTask
 
-        authService.signIn(email, password, authStateCallback)
-        assert(authState == AuthState.FAILED)
+        authService.signIn(email, password, mockedAuthCallback)
+        assert(testState == TestState.FAILED)
     }
 
     @Test
@@ -139,8 +127,8 @@ class AuthServiceTest {
             mockedFirebaseAuth.signInAnonymously()
         } returns failureTask
 
-        authService.signInAnonymously(authStateCallback)
-        assert(authState == AuthState.FAILED)
+        authService.signInAnonymously(mockedAuthCallback)
+        assert(testState == TestState.FAILED)
     }
 
     @Test
@@ -149,8 +137,8 @@ class AuthServiceTest {
             mockedFirebaseAuth.signInAnonymously()
         } returns successTask
 
-        authService.signInAnonymously(authStateCallback)
-        assert(authState == AuthState.SUCCESSFUL)
+        authService.signInAnonymously(mockedAuthCallback)
+        assert(testState == TestState.SUCCESSFUL)
     }
 
     @Test

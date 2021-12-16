@@ -1,5 +1,6 @@
 package xyz.joaophp.liftin.data.services.auth
 
+import android.content.pm.SigningInfo
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -15,19 +16,19 @@ class AuthServiceImpl(
         return Success(User(user.uid))
     }
 
-    override fun register(email: String, password: String, cb: (Either<Failure, User>) -> Unit) {
+    override fun register(email: String, password: String, cb: AuthCallback) {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task -> handleTask(task, cb) }
+            .addOnCompleteListener { task -> handleTask(task, RegisterFailure(), cb) }
     }
 
-    override fun signIn(email: String, password: String, cb: (Either<Failure, User>) -> Unit) {
+    override fun signIn(email: String, password: String, cb: AuthCallback) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task -> handleTask(task, cb) }
+            .addOnCompleteListener { task -> handleTask(task, SignInFailure(), cb) }
     }
 
-    override fun signInAnonymously(cb: (Either<Failure, User>) -> Unit) {
+    override fun signInAnonymously(cb: AuthCallback) {
         firebaseAuth.signInAnonymously()
-            .addOnCompleteListener { task -> handleTask(task, cb) }
+            .addOnCompleteListener { task -> handleTask(task, SignInFailure(), cb) }
     }
 
     override fun signOut(): Either<Failure, Unit> {
@@ -37,9 +38,9 @@ class AuthServiceImpl(
         }
     }
 
-    private fun handleTask(task: Task<AuthResult>, cb: (Either<Failure, User>) -> Unit) {
-        if (task.isSuccessful) cb(getCurrentUser())
-        else cb(Error(SignInFailure()))
+    private fun handleTask(task: Task<AuthResult>, failure: Failure, cb: AuthCallback) {
+        if (task.isSuccessful) cb?.invoke(getCurrentUser())
+        else cb?.invoke(Error(failure))
     }
 
 
