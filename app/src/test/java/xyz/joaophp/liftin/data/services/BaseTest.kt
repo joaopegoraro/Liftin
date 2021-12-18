@@ -1,7 +1,7 @@
 package xyz.joaophp.liftin.data.services
 
 import xyz.joaophp.liftin.utils.Either
-import xyz.joaophp.liftin.utils.Failure
+import xyz.joaophp.liftin.utils.failures.Failure
 
 abstract class BaseTest {
 

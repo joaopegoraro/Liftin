@@ -3,7 +3,7 @@ package xyz.joaophp.liftin.data.services.auth
 import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.utils.AuthCallback
 import xyz.joaophp.liftin.utils.Either
-import xyz.joaophp.liftin.utils.Failure
+import xyz.joaophp.liftin.utils.failures.Failure
 
 interface AuthService {
 

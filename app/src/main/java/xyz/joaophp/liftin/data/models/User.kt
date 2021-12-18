@@ -1,6 +1,10 @@
 package xyz.joaophp.liftin.data.models
 
-import xyz.joaophp.liftin.utils.*
+import xyz.joaophp.liftin.utils.Either
+import xyz.joaophp.liftin.utils.Error
+import xyz.joaophp.liftin.utils.Success
+import xyz.joaophp.liftin.utils.failures.Failure
+import xyz.joaophp.liftin.utils.failures.ModelFailure
 
 data class User(
     val uid: String,
@@ -16,7 +20,7 @@ data class User(
                 User(uid = map["uid"] as String)
             )
         } catch (e: Exception) {
-            Error(ConversionFailure)
+            Error(ModelFailure.FailedConversion(e))
         }
     }
 }

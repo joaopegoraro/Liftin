@@ -1,6 +1,10 @@
 package xyz.joaophp.liftin.data.models
 
-import xyz.joaophp.liftin.utils.*
+import xyz.joaophp.liftin.utils.Either
+import xyz.joaophp.liftin.utils.Error
+import xyz.joaophp.liftin.utils.Success
+import xyz.joaophp.liftin.utils.failures.Failure
+import xyz.joaophp.liftin.utils.failures.ModelFailure
 
 data class Exercise(
     val nome: Number,
@@ -26,7 +30,7 @@ data class Exercise(
                 )
             )
         } catch (e: Exception) {
-            Error(ConversionFailure)
+            Error(ModelFailure.FailedConversion(e))
         }
     }
 }
