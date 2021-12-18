@@ -3,10 +3,11 @@ package xyz.joaophp.liftin.data.services.storage
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageException
+import kotlinx.coroutines.tasks.await
+import xyz.joaophp.liftin.utils.Either
 import xyz.joaophp.liftin.utils.Error
-import xyz.joaophp.liftin.utils.StorageCallback
-import xyz.joaophp.liftin.utils.StorageDownloadCallback
 import xyz.joaophp.liftin.utils.Success
+import xyz.joaophp.liftin.utils.failures.Failure
 import xyz.joaophp.liftin.utils.failures.StorageFailure
 
 class StorageServiceImpl(
@@ -19,39 +20,36 @@ class StorageServiceImpl(
 
     private val storageRef = firebaseStorage.reference
 
-    override fun upload(path: String, fileUri: Uri, cb: StorageCallback) {
-        val ref = storageRef.child(path)
-        ref.putFile(fileUri).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                cb(Success(Unit))
-            } else {
-                val failure = getFailure(task.exception)
-                cb(Error(failure))
-            }
+    override suspend fun upload(path: String, fileUri: Uri): Either<Failure, Unit> {
+        return try {
+            val ref = storageRef.child(path)
+            ref.putFile(fileUri).await()
+            Success(Unit)
+        } catch (e: Exception) {
+            val failure = getFailure(e)
+            Error(failure)
         }
     }
 
-    override fun download(path: String, cb: StorageDownloadCallback) {
-        val ref = storageRef.child(path)
-        ref.getBytes(ONE_MEGABYTE).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                cb(Success(task.result))
-            } else {
-                val failure = getFailure(task.exception)
-                cb(Error(failure))
-            }
+    override suspend fun download(path: String): Either<Failure, ByteArray> {
+        return try {
+            val ref = storageRef.child(path)
+            val result = ref.getBytes(ONE_MEGABYTE).await()
+            Success(result)
+        } catch (e: Exception) {
+            val failure = getFailure(e)
+            Error(failure)
         }
     }
 
-    override fun delete(path: String, cb: StorageCallback) {
-        val ref = storageRef.child(path)
-        ref.delete().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                cb(Success(Unit))
-            } else {
-                val failure = getFailure(task.exception)
-                cb(Error(failure))
-            }
+    override suspend fun delete(path: String): Either<Failure, Unit> {
+        return try {
+            val ref = storageRef.child(path)
+            ref.delete().await()
+            Success(Unit)
+        } catch (e: Exception) {
+            val failure = getFailure(e)
+            Error(failure)
         }
     }
 
@@ -69,4 +67,5 @@ class StorageServiceImpl(
             StorageFailure.Unknown(e)
         }
     }
+
 }

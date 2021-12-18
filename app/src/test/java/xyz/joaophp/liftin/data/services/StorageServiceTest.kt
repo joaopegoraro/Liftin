@@ -1,53 +1,40 @@
 package xyz.joaophp.liftin.data.services
 
 import android.net.Uri
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
+import io.mockk.mockkStatic
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import xyz.joaophp.liftin.data.services.storage.StorageService
 import xyz.joaophp.liftin.data.services.storage.StorageServiceImpl
-import xyz.joaophp.liftin.utils.StorageCallback
-import xyz.joaophp.liftin.utils.StorageDownloadCallback
+import xyz.joaophp.liftin.utils.Error
+import xyz.joaophp.liftin.utils.Helpers
+import xyz.joaophp.liftin.utils.Success
 
-class StorageServiceTest : BaseTest() {
+class StorageServiceTest {
 
     private lateinit var storageService: StorageService
 
     // Mock Uri
     private val mockUri = mockk<Uri>()
 
-    // Mock Slots
-    private val uploadSlot = slot<OnCompleteListener<UploadTask.TaskSnapshot>>()
-    private val downloadSlot = slot<OnCompleteListener<ByteArray>>()
-    private val deleteSlot = slot<OnCompleteListener<Void>>()
-
-    // Mock download tasks
-    private val successDownloadTask = mockk<Task<ByteArray>>()
-    private val failureDownloadTask = mockk<Task<ByteArray>>()
-
-    // Mock Upload tasks
-    private val successUploadTask = mockk<UploadTask>()
-    private val failureUploadTask = mockk<UploadTask>()
-
-    // Mock delete tasks
-    private val successDeleteTask = mockk<Task<Void>>()
-    private val failureDeleteTask = mockk<Task<Void>>()
-
-    // Mock Callbacks
-    private val storageCallback: StorageCallback = { it.mockFold() }
-    private val downloadCallback: StorageDownloadCallback = { it.mockFold() }
-
     // Mock FirebaseStorage
     private val mockStorage = mockk<FirebaseStorage>()
     private val mockRef = mockk<StorageReference>()
     private val imagesRef = mockk<StorageReference>()
+
+    // Mock returns
+    private val mockSnapshot = mockk<UploadTask.TaskSnapshot>()
+    private val mockByteArray = mockk<ByteArray>()
+
 
     // Constants
     companion object {
@@ -58,51 +45,8 @@ class StorageServiceTest : BaseTest() {
     @Before
     fun setUp() {
 
-        // Set up successful upload task mock
-        every { successUploadTask.isSuccessful } returns true
-        every { successUploadTask.addOnCompleteListener(capture(uploadSlot)) } answers {
-            uploadSlot.captured.onComplete(successUploadTask)
-            successUploadTask
-        }
-
-        // Set up failed upload task mock
-        every { failureUploadTask.isSuccessful } returns false
-        every { failureUploadTask.exception } returns Exception()
-        every { failureUploadTask.addOnCompleteListener(capture(uploadSlot)) } answers {
-            uploadSlot.captured.onComplete(failureUploadTask)
-            failureUploadTask
-        }
-
-        // Set up successful download task mock
-        every { successDownloadTask.isSuccessful } returns true
-        every { successDownloadTask.result } returns byteArrayOf()
-        every { successDownloadTask.addOnCompleteListener(capture(downloadSlot)) } answers {
-            downloadSlot.captured.onComplete(successDownloadTask)
-            successDownloadTask
-        }
-
-        // Set up failed download task mock
-        every { failureDownloadTask.isSuccessful } returns false
-        every { failureDownloadTask.exception } returns Exception()
-        every { failureDownloadTask.addOnCompleteListener(capture(downloadSlot)) } answers {
-            downloadSlot.captured.onComplete(failureDownloadTask)
-            failureDownloadTask
-        }
-
-        // Set up successful delete task mock
-        every { successDeleteTask.isSuccessful } returns true
-        every { successDeleteTask.addOnCompleteListener(capture(deleteSlot)) } answers {
-            deleteSlot.captured.onComplete(successDeleteTask)
-            successDeleteTask
-        }
-
-        // Set up failed delete task mock
-        every { failureDeleteTask.isSuccessful } returns false
-        every { failureDeleteTask.exception } returns Exception()
-        every { failureDeleteTask.addOnCompleteListener(capture(deleteSlot)) } answers {
-            deleteSlot.captured.onComplete(failureDeleteTask)
-            failureDeleteTask
-        }
+        // Mock await() method
+        mockkStatic("kotlinx.coroutines.tasks.TasksKt") // IMPORTANT!
 
         // Setup Mock FirebaseStorage
         every { mockStorage.reference } returns mockRef
@@ -111,51 +55,57 @@ class StorageServiceTest : BaseTest() {
         storageService = StorageServiceImpl(mockStorage)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun uploadFailure_test() {
-        every { imagesRef.putFile(mockUri) } returns failureUploadTask
+    fun uploadFailure_test() = runTest {
+        coEvery { imagesRef.putFile(mockUri).await() } throws Exception()
 
-        storageService.upload(imageRefPath, mockUri, storageCallback)
-        assert(testState == TestState.FAILED)
+        val result = storageService.upload(imageRefPath, mockUri)
+        assert(result is Error)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun uploadSuccess_test() {
-        every { imagesRef.putFile(mockUri) } returns successUploadTask
+    fun uploadSuccess_test() = runTest {
+        coEvery { imagesRef.putFile(mockUri).await() } returns mockSnapshot
 
-        storageService.upload(imageRefPath, mockUri, storageCallback)
-        assert(testState == TestState.SUCCESSFUL)
+        val result = storageService.upload(imageRefPath, mockUri)
+        assert(result is Success)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun downloadFailure_test() {
-        every { imagesRef.getBytes(ONE_MEGABYTE) } returns failureDownloadTask
+    fun downloadFailure_test() = runTest {
+        coEvery { imagesRef.getBytes(ONE_MEGABYTE) } throws Exception()
 
-        storageService.download(imageRefPath, downloadCallback)
-        assert(testState == TestState.FAILED)
+        val result = storageService.download(imageRefPath)
+        assert(result is Error)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun downloadSuccess_test() {
-        every { imagesRef.getBytes(ONE_MEGABYTE) } returns successDownloadTask
+    fun downloadSuccess_test() = runTest {
+        coEvery { imagesRef.getBytes(ONE_MEGABYTE).await() } returns mockByteArray
 
-        storageService.download(imageRefPath, downloadCallback)
-        assert(testState == TestState.SUCCESSFUL)
+        val result = storageService.download(imageRefPath)
+        assert(result is Success)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun deleteFailure_test() {
-        every { imagesRef.delete() } returns failureDeleteTask
+    fun deleteFailure_test() = runTest {
+        coEvery { imagesRef.delete().await() } throws Exception()
 
-        storageService.delete(imageRefPath, storageCallback)
-        assert(testState == TestState.FAILED)
+        val result = storageService.delete(imageRefPath)
+        assert(result is Error)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun deleteSuccess_test() {
-        every { imagesRef.delete() } returns successDeleteTask
+    fun deleteSuccess_test() = runTest {
+        coEvery { imagesRef.delete().await() } returns Helpers.makeVoid()
 
-        storageService.delete(imageRefPath, storageCallback)
-        assert(testState == TestState.SUCCESSFUL)
+        val result = storageService.delete(imageRefPath)
+        assert(result is Success)
     }
 }

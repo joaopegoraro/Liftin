@@ -1,14 +1,12 @@
 package xyz.joaophp.liftin.data.services.storage
 
 import android.net.Uri
-import xyz.joaophp.liftin.utils.StorageCallback
-import xyz.joaophp.liftin.utils.StorageDownloadCallback
+import xyz.joaophp.liftin.utils.Either
+import xyz.joaophp.liftin.utils.failures.Failure
 
 interface StorageService {
 
-    fun upload(path: String, fileUri: Uri, cb: StorageCallback)
-
-    fun download(path: String, cb: StorageDownloadCallback)
-
-    fun delete(path: String, cb: StorageCallback)
+    suspend fun upload(path: String, fileUri: Uri): Either<Failure, Unit>
+    suspend fun download(path: String): Either<Failure, ByteArray>
+    suspend fun delete(path: String): Either<Failure, Unit>
 }
