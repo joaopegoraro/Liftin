@@ -1,9 +1,6 @@
-package xyz.joaophp.liftin.data.services
+package xyz.joaophp.liftin.data.models
 
 import org.junit.Test
-import xyz.joaophp.liftin.data.models.Exercise
-import xyz.joaophp.liftin.data.models.User
-import xyz.joaophp.liftin.data.models.Workout
 import xyz.joaophp.liftin.utils.Error
 import java.sql.Timestamp
 

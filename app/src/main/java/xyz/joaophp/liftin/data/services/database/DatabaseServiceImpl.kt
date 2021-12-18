@@ -9,28 +9,41 @@ class DatabaseServiceImpl(
 ) : DatabaseService {
 
     override fun set(model: Model, path: String, cb: DatabaseCallback) {
-        db.document(path).set(model.toMap())
-            .addOnSuccessListener { cb?.invoke(Success(model)) }
-            .addOnFailureListener { cb?.invoke(Error(CreateDocumentFailure())) }
+        try {
+            db.document(path).set(model.toMap())
+                .addOnSuccessListener { cb?.invoke(Success(model)) }
+                .addOnFailureListener { cb?.invoke(Error(CreateDocumentFailure)) }
+        } catch (e: Exception) {
+            cb?.invoke(Error(ExceptionFailure(e)))
+        }
     }
 
     override fun get(path: String, cb: DatabaseGetCallback) {
-        db.document(path).get()
-            .addOnSuccessListener { doc ->
-                val data = doc.data ?: mapOf()
-                if (data.isEmpty()) {
-                    cb?.invoke(Error(DocumentNotFoundFailure()))
-                } else {
-                    cb?.invoke(Success(data))
+        try {
+            db.document(path).get()
+                .addOnSuccessListener { doc ->
+                    val data = doc.data ?: mapOf()
+                    if (data.isEmpty()) {
+                        cb?.invoke(Error(DocumentNotFoundFailure))
+                    } else {
+                        cb?.invoke(Success(data))
+                    }
                 }
-            }
-            .addOnFailureListener { cb?.invoke(Error(ReadDocumentFailure())) }
+                .addOnFailureListener { cb?.invoke(Error(ReadDocumentFailure)) }
+
+        } catch (e: Exception) {
+            cb?.invoke(Error(ExceptionFailure(e)))
+        }
     }
 
     override fun delete(model: Model, path: String, cb: DatabaseCallback) {
-        db.document(path).delete()
-            .addOnSuccessListener { cb?.invoke(Success(model)) }
-            .addOnFailureListener { cb?.invoke(Error(DeleteDocumentFailure())) }
+        try {
+            db.document(path).delete()
+                .addOnSuccessListener { cb?.invoke(Success(model)) }
+                .addOnFailureListener { cb?.invoke(Error(DeleteDocumentFailure)) }
+        } catch (e: Exception) {
+            cb?.invoke(Error(ExceptionFailure(e)))
+        }
     }
 
 

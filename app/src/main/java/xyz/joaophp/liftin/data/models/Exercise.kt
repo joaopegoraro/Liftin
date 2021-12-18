@@ -26,7 +26,7 @@ data class Exercise(
                 )
             )
         } catch (e: Exception) {
-            Error(ConversionFailure())
+            Error(ConversionFailure)
         }
     }
 }

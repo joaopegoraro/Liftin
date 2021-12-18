@@ -16,7 +16,7 @@ data class User(
                 User(uid = map["uid"] as String)
             )
         } catch (e: Exception) {
-            Error(ConversionFailure())
+            Error(ConversionFailure)
         }
     }
 }

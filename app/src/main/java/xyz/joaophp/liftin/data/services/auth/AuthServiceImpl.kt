@@ -1,6 +1,5 @@
 package xyz.joaophp.liftin.data.services.auth
 
-import android.content.pm.SigningInfo
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -12,35 +11,59 @@ class AuthServiceImpl(
 ) : AuthService {
 
     override fun getCurrentUser(): Either<Failure, User> {
-        val user = firebaseAuth.currentUser ?: return Error(UserNotFoundFailure())
-        return Success(User(user.uid))
+        try {
+            val user = firebaseAuth.currentUser ?: return Error(UserNotFoundFailure)
+            return Success(User(user.uid))
+        } catch (e: Exception) {
+            return Error(ExceptionFailure(e))
+        }
     }
 
     override fun register(email: String, password: String, cb: AuthCallback) {
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task -> handleTask(task, RegisterFailure(), cb) }
+        try {
+            firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task -> handleTask(task, RegisterFailure, cb) }
+        } catch (e: Exception) {
+            cb?.invoke(Error(ExceptionFailure(e)))
+        }
     }
 
     override fun signIn(email: String, password: String, cb: AuthCallback) {
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task -> handleTask(task, SignInFailure(), cb) }
+        try {
+            firebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task -> handleTask(task, SignInFailure, cb) }
+        } catch (e: Exception) {
+            cb?.invoke(Error(ExceptionFailure(e)))
+        }
     }
 
     override fun signInAnonymously(cb: AuthCallback) {
-        firebaseAuth.signInAnonymously()
-            .addOnCompleteListener { task -> handleTask(task, SignInFailure(), cb) }
+        try {
+            firebaseAuth.signInAnonymously()
+                .addOnCompleteListener { task -> handleTask(task, SignInFailure, cb) }
+        } catch (e: Exception) {
+            cb?.invoke(Error(ExceptionFailure(e)))
+        }
     }
 
     override fun signOut(): Either<Failure, Unit> {
-        firebaseAuth.signOut().run {
-            return if (firebaseAuth.currentUser == null) Success(Unit)
-            else Error(SignOutFailure())
+        try {
+            firebaseAuth.signOut().run {
+                return if (firebaseAuth.currentUser == null) Success(Unit)
+                else Error(SignOutFailure)
+            }
+        } catch (e: Exception) {
+            return Error(ExceptionFailure(e))
         }
     }
 
     private fun handleTask(task: Task<AuthResult>, failure: Failure, cb: AuthCallback) {
-        if (task.isSuccessful) cb?.invoke(getCurrentUser())
-        else cb?.invoke(Error(failure))
+        try {
+            if (task.isSuccessful) cb?.invoke(getCurrentUser())
+            else cb?.invoke(Error(failure))
+        } catch (e: Exception) {
+            cb?.invoke(Error(ExceptionFailure(e)))
+        }
     }
 
 
