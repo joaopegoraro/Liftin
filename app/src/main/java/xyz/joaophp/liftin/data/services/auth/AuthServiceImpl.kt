@@ -55,12 +55,17 @@ class AuthServiceImpl(
     }
 
     private fun getFailure(e: Exception?): AuthFailure {
-        return when (e) {
-            is FirebaseAuthInvalidCredentialsException -> AuthFailure.InvalidCredentials
-            is FirebaseAuthInvalidUserException -> AuthFailure.InvalidUser
-            is FirebaseAuthUserCollisionException -> AuthFailure.EmailTaken
-            is FirebaseAuthWeakPasswordException -> AuthFailure.WeakPassword(e.reason)
-            else -> AuthFailure.Unknown(e)
+        return if (e is FirebaseAuthException) {
+            if (e.errorCode == "auth/invalid-email") return AuthFailure.BadEmail
+            when (e) {
+                is FirebaseAuthInvalidCredentialsException -> AuthFailure.InvalidCredentials
+                is FirebaseAuthInvalidUserException -> AuthFailure.InvalidUser
+                is FirebaseAuthUserCollisionException -> AuthFailure.EmailTaken
+                is FirebaseAuthWeakPasswordException -> AuthFailure.WeakPassword(e.reason)
+                else -> AuthFailure.Unknown(e)
+            }
+        } else {
+            AuthFailure.Unknown(e)
         }
     }
 }
