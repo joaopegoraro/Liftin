@@ -1,7 +1,6 @@
 package xyz.joaophp.liftin.data.services
 
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -16,17 +15,15 @@ import xyz.joaophp.liftin.data.services.database.DatabaseService
 import xyz.joaophp.liftin.data.services.database.DatabaseServiceImpl
 import xyz.joaophp.liftin.utils.DatabaseCallback
 import xyz.joaophp.liftin.utils.DatabaseGetCallback
-import xyz.joaophp.liftin.utils.Helpers
 
 class DatabaseServiceTest : BaseTest() {
 
     private lateinit var dbService: DatabaseService
 
     // Mock Tasks
+    private val slot = slot<OnCompleteListener<Void?>>()
+    private val getSlot = slot<OnCompleteListener<DocumentSnapshot>>()
     private val successTask = mockk<Task<Void?>>()
-    private val successfulSlot = slot<OnSuccessListener<Void?>>()
-    private val successfulGetSlot = slot<OnSuccessListener<DocumentSnapshot>>()
-    private val failedSlot = slot<OnFailureListener>()
     private val successGetTask = mockk<Task<DocumentSnapshot>>()
     private val failureTask = mockk<Task<Void?>>()
     private val failureGetTask = mockk<Task<DocumentSnapshot>>()
@@ -55,44 +52,32 @@ class DatabaseServiceTest : BaseTest() {
     fun setUp() {
         // Set up successful task mock
         every { successTask.isSuccessful } returns true
-        every { successTask.addOnSuccessListener(capture(successfulSlot)) } answers {
-            // Only way that I found to be able to pass Void as a parameter was using the
-            // makeVoid() method
-            successfulSlot.captured.onSuccess(Helpers.makeVoid())
-            successTask
-        }
-        every { successTask.addOnFailureListener(capture(failedSlot)) } answers {
+        every { successTask.addOnCompleteListener(capture(slot)) } answers {
+            slot.captured.onComplete(successTask)
             successTask
         }
 
         // Set up failed task mock
         every { failureTask.isSuccessful } returns false
-        every { failureTask.addOnSuccessListener(capture(successfulSlot)) } answers {
-            failureTask
-        }
-        every { failureTask.addOnFailureListener(capture(failedSlot)) } answers {
-            failedSlot.captured.onFailure(Exception())
+        every { failureTask.exception } returns Exception()
+        every { failureTask.addOnCompleteListener(capture(slot)) } answers {
+            slot.captured.onComplete(failureTask)
             failureTask
         }
 
         // Set up successful get task mock
         every { successGetTask.isSuccessful } returns true
-        every { successGetTask.addOnSuccessListener(capture(successfulGetSlot)) } answers {
-            successfulGetSlot.captured.onSuccess(mockedSnapshot)
-            successGetTask
-        }
-        every { successGetTask.addOnFailureListener(capture(failedSlot)) } answers {
+        every { successGetTask.result.data } returns null
+        every { successGetTask.addOnCompleteListener(capture(getSlot)) } answers {
+            getSlot.captured.onComplete(successGetTask)
             successGetTask
         }
 
         // Set up failed get task mock
         every { failureGetTask.isSuccessful } returns false
-        every { failureGetTask.addOnSuccessListener(capture(successfulGetSlot)) } answers {
-            successfulGetSlot.captured.onSuccess(mockedSnapshot)
-            failureGetTask
-        }
-        every { failureGetTask.addOnFailureListener(capture(failedSlot)) } answers {
-            failedSlot.captured.onFailure(Exception())
+        every { failureGetTask.exception } returns Exception()
+        every { failureGetTask.addOnCompleteListener(capture(getSlot)) } answers {
+            getSlot.captured.onComplete(failureGetTask)
             failureGetTask
         }
 

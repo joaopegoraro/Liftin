@@ -15,27 +15,38 @@ class DatabaseServiceImpl(
 
     override fun set(model: Model, path: String, cb: DatabaseCallback) {
         db.document(path).set(model.toMap())
-            .addOnSuccessListener { cb(Success(model)) }
-            .addOnFailureListener { e ->
-                cb(Error(getFailure(e)))
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    cb(Success(model))
+                } else {
+                    val failure = getFailure(task.exception)
+                    cb(Error(failure))
+                }
             }
     }
 
     override fun get(path: String, cb: DatabaseGetCallback) {
         db.document(path).get()
-            .addOnSuccessListener { doc ->
-                val data = doc.data ?: mapOf()
-                cb(Success(data))
-            }.addOnFailureListener { e ->
-                cb(Error(getFailure(e)))
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val data = task.result.data ?: mapOf()
+                    cb(Success(data))
+                } else {
+                    val failure = getFailure(task.exception)
+                    cb(Error(failure))
+                }
             }
     }
 
     override fun delete(model: Model, path: String, cb: DatabaseCallback) {
         db.document(path).delete()
-            .addOnSuccessListener { cb(Success(model)) }
-            .addOnFailureListener { e ->
-                cb(Error(getFailure(e)))
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    cb(Success(model))
+                } else {
+                    val failure = getFailure(task.exception)
+                    cb(Error(failure))
+                }
             }
     }
 
