@@ -9,7 +9,7 @@ typealias DatabaseCallback = (Either<Failure, Model>) -> Unit
 typealias DatabaseGetCallback = (Either<Failure, Map<String, Any>>) -> Unit
 
 // Storage Callbacks
-typealias StorageUploadCallback = (Either<Failure, Unit>) -> Unit
+typealias StorageCallback = (Either<Failure, Unit>) -> Unit
 typealias StorageDownloadCallback = (Either<Failure, ByteArray>) -> Unit
 
 // Authentication Callbacks
