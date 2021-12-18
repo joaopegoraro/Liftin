@@ -1,7 +1,7 @@
 package xyz.joaophp.liftin.data.models
 
 import org.junit.Test
-import xyz.joaophp.liftin.utils.Error
+import xyz.joaophp.liftin.utils.ConversionException
 import java.sql.Timestamp
 
 class ModelTest {
@@ -70,32 +70,36 @@ class ModelTest {
 
     @Test
     fun fromMapFailure_test() {
-        val userTest = user.fromMap(workoutHashMap)
-        val workoutTest = workout.fromMap(exerciseHashMap)
-        val exerciseTest = exercise.fromMap(userHashMap)
+        try {
+            User.fromMap(workoutHashMap)
+            assert(false)
+        } catch (e: ConversionException) {
+            assert(true)
+        }
 
-        assert(userTest is Error)
-        assert(workoutTest is Error)
-        assert(exerciseTest is Error)
+        try {
+            Workout.fromMap(exerciseHashMap)
+            assert(false)
+        } catch (e: ConversionException) {
+            assert(true)
+        }
+
+        try {
+            Exercise.fromMap(userHashMap)
+            assert(false)
+        } catch (e: ConversionException) {
+            assert(true)
+        }
     }
 
     @Test
     fun fromMapSuccess_test() {
-        val userTest = user.fromMap(userHashMap)
-        val workoutTest = workout.fromMap(workoutHashMap)
-        val exerciseTest = exercise.fromMap(exerciseHashMap)
+        val userTest = User.fromMap(userHashMap)
+        val workoutTest = Workout.fromMap(workoutHashMap)
+        val exerciseTest = Exercise.fromMap(exerciseHashMap)
 
-        userTest.fold(
-            ifError = { assert(false) },
-            ifSuccess = { assert(it == user) }
-        )
-        workoutTest.fold(
-            ifError = { assert(false) },
-            ifSuccess = { assert(it == workout) }
-        )
-        exerciseTest.fold(
-            ifError = { assert(false) },
-            ifSuccess = { assert(it == exercise) }
-        )
+        assert(userTest == user)
+        assert(workoutTest == workout)
+        assert(exerciseTest == exercise)
     }
 }

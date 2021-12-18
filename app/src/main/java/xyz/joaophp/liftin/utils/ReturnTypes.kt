@@ -5,8 +5,9 @@ import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.utils.failures.Failure
 
 // Database Callbacks
-typealias DatabaseCallback = (Either<Failure, Model>) -> Unit
-typealias DatabaseGetCallback = (Either<Failure, Map<String, Any>>) -> Unit
+typealias DatabaseResult = Either<Failure, Model>
+typealias DatabaseGetResult = Either<Failure, Map<String, Any>>
+typealias DatabaseGetAllResult = Either<Failure, List<Map<String, Any>?>>
 
 // Storage Callbacks
 typealias StorageCallback = (Either<Failure, Unit>) -> Unit

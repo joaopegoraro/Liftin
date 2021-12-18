@@ -1,46 +1,38 @@
 package xyz.joaophp.liftin.data.services
 
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
+import io.mockk.mockkStatic
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.data.services.database.DatabaseService
 import xyz.joaophp.liftin.data.services.database.DatabaseServiceImpl
-import xyz.joaophp.liftin.utils.DatabaseCallback
-import xyz.joaophp.liftin.utils.DatabaseGetCallback
+import xyz.joaophp.liftin.utils.Error
+import xyz.joaophp.liftin.utils.Helpers
+import xyz.joaophp.liftin.utils.Success
 
-class DatabaseServiceTest : BaseTest() {
+class DatabaseServiceTest {
 
     private lateinit var dbService: DatabaseService
-
-    // Mock Tasks
-    private val slot = slot<OnCompleteListener<Void?>>()
-    private val getSlot = slot<OnCompleteListener<DocumentSnapshot>>()
-    private val successTask = mockk<Task<Void?>>()
-    private val successGetTask = mockk<Task<DocumentSnapshot>>()
-    private val failureTask = mockk<Task<Void?>>()
-    private val failureGetTask = mockk<Task<DocumentSnapshot>>()
 
     // Model to be passed to the methods
     private val user = User(uid)
 
     // Mock FirebaseFirestore
     private val mockedFirestore = mockk<FirebaseFirestore>()
-
-    // Mock Document
     private val mockedSnapshot = mockk<DocumentSnapshot>()
-    private val mockedDocumentRef = mockk<DocumentReference>()
+    private val mockedGetAllSnapshot = mockk<QuerySnapshot>()
 
-    // Mock Callbacks
-    private val databaseStateCallback: DatabaseCallback = { it.mockFold() }
-    private val databaseGetStateCallback: DatabaseGetCallback = { it.mockFold() }
+    // Mock Exception
+    private val exception = Exception()
 
     // Constants
     companion object {
@@ -50,90 +42,83 @@ class DatabaseServiceTest : BaseTest() {
 
     @Before
     fun setUp() {
-        // Set up successful task mock
-        every { successTask.isSuccessful } returns true
-        every { successTask.addOnCompleteListener(capture(slot)) } answers {
-            slot.captured.onComplete(successTask)
-            successTask
-        }
-
-        // Set up failed task mock
-        every { failureTask.isSuccessful } returns false
-        every { failureTask.exception } returns Exception()
-        every { failureTask.addOnCompleteListener(capture(slot)) } answers {
-            slot.captured.onComplete(failureTask)
-            failureTask
-        }
-
-        // Set up successful get task mock
-        every { successGetTask.isSuccessful } returns true
-        every { successGetTask.result.data } returns null
-        every { successGetTask.addOnCompleteListener(capture(getSlot)) } answers {
-            getSlot.captured.onComplete(successGetTask)
-            successGetTask
-        }
-
-        // Set up failed get task mock
-        every { failureGetTask.isSuccessful } returns false
-        every { failureGetTask.exception } returns Exception()
-        every { failureGetTask.addOnCompleteListener(capture(getSlot)) } answers {
-            getSlot.captured.onComplete(failureGetTask)
-            failureGetTask
-        }
-
-        // Set up Document mock
-        every { mockedFirestore.document(path) } returns mockedDocumentRef
-        every { mockedSnapshot.data } returns user.toMap()
-
+        mockkStatic("kotlinx.coroutines.tasks.TasksKt")
+        every { mockedSnapshot.data } returns mapOf()
         dbService = DatabaseServiceImpl(mockedFirestore)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun setFailure_test() {
-        every { mockedDocumentRef.set(user.toMap()) } returns failureTask
+    fun setFailure_test() = runTest {
+        coEvery { mockedFirestore.document(path).set(user.toMap()).await() } throws exception
 
-        dbService.set(user, path, databaseStateCallback)
-        assert(testState == TestState.FAILED)
+        val result = dbService.set(user, path)
+        assert(result is Error)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun setSuccess_test() = runTest {
+        coEvery {
+            mockedFirestore.document(path).set(user.toMap()).await()
+        } returns Helpers.makeVoid()
+
+        val result = dbService.set(user, path)
+        assert(result is Success)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun getFailure_test() = runTest {
+        coEvery { mockedFirestore.document(path).get().await() } throws exception
+
+        val result = dbService.get(path)
+        assert(result is Error)
     }
 
     @Test
-    fun setSuccess_test() {
-        every { mockedDocumentRef.set(user.toMap()) } returns successTask
+    @ExperimentalCoroutinesApi
+    fun getSuccess_test() = runTest {
+        coEvery { mockedFirestore.document(path).get().await() } returns mockedSnapshot
 
-        dbService.set(user, path, databaseStateCallback)
-        assert(testState == TestState.SUCCESSFUL)
+        val result = dbService.get(path)
+        assert(result is Success)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun getAllFailure_test() = runTest {
+        coEvery { mockedFirestore.collection(path).get().await() } throws exception
+
+        val result = dbService.getAll(path)
+        assert(result is Error)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun getAllSuccess_test() = runTest {
+        coEvery { mockedFirestore.collection(path).get().await() } returns mockedGetAllSnapshot
+        every { mockedGetAllSnapshot.documents } returns listOf(mockedSnapshot)
+
+        val result = dbService.getAll(path)
+        assert(result is Success)
     }
 
     @Test
-    fun getFailure_test() {
-        every { mockedDocumentRef.get() } returns failureGetTask
+    @ExperimentalCoroutinesApi
+    fun deleteFailure_test() = runTest {
+        coEvery { mockedFirestore.document(path).delete().await() } throws exception
 
-        dbService.get(path, databaseGetStateCallback)
-        assert(testState == TestState.FAILED)
+        val result = dbService.delete(user, path)
+        assert(result is Error)
     }
 
     @Test
-    fun getSuccess_test() {
-        every { mockedDocumentRef.get() } returns successGetTask
+    @ExperimentalCoroutinesApi
+    fun deleteSuccess_test() = runTest {
+        coEvery { mockedFirestore.document(path).delete().await() } returns Helpers.makeVoid()
 
-        dbService.get(path, databaseGetStateCallback)
-        assert(testState == TestState.SUCCESSFUL)
+        val result = dbService.delete(user, path)
+        assert(result is Success)
     }
-
-    @Test
-    fun deleteFailure_test() {
-        every { mockedDocumentRef.delete() } returns failureTask
-
-        dbService.delete(user, path, databaseStateCallback)
-        assert(testState == TestState.FAILED)
-    }
-
-    @Test
-    fun deleteSuccess_test() {
-        every { mockedDocumentRef.delete() } returns successTask
-
-        dbService.delete(user, path, databaseStateCallback)
-        assert(testState == TestState.SUCCESSFUL)
-    }
-
 }

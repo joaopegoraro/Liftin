@@ -2,52 +2,55 @@ package xyz.joaophp.liftin.data.services.database
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import kotlinx.coroutines.tasks.await
 import xyz.joaophp.liftin.data.models.Model
-import xyz.joaophp.liftin.utils.DatabaseCallback
-import xyz.joaophp.liftin.utils.DatabaseGetCallback
-import xyz.joaophp.liftin.utils.Error
-import xyz.joaophp.liftin.utils.Success
+import xyz.joaophp.liftin.utils.*
 import xyz.joaophp.liftin.utils.failures.DatabaseFailure
 
 class DatabaseServiceImpl(
     private val db: FirebaseFirestore
 ) : DatabaseService {
 
-    override fun set(model: Model, path: String, cb: DatabaseCallback) {
-        db.document(path).set(model.toMap())
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    cb(Success(model))
-                } else {
-                    val failure = getFailure(task.exception)
-                    cb(Error(failure))
-                }
-            }
+    override suspend fun set(model: Model, path: String): DatabaseResult {
+        return try {
+            db.document(path).set(model.toMap()).await()
+            Success(model)
+        } catch (e: Exception) {
+            val failure = getFailure(e)
+            Error(failure)
+        }
     }
 
-    override fun get(path: String, cb: DatabaseGetCallback) {
-        db.document(path).get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val data = task.result.data ?: mapOf()
-                    cb(Success(data))
-                } else {
-                    val failure = getFailure(task.exception)
-                    cb(Error(failure))
-                }
-            }
+    override suspend fun get(path: String): DatabaseGetResult {
+        return try {
+            val snapshot = db.document(path).get().await()
+            val data = snapshot.data ?: mapOf()
+            Success(data)
+        } catch (e: Exception) {
+            val failure = getFailure(e)
+            Error(failure)
+        }
     }
 
-    override fun delete(model: Model, path: String, cb: DatabaseCallback) {
-        db.document(path).delete()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    cb(Success(model))
-                } else {
-                    val failure = getFailure(task.exception)
-                    cb(Error(failure))
-                }
-            }
+    override suspend fun getAll(path: String): DatabaseGetAllResult {
+        return try {
+            val snapshot = db.collection(path).get().await()
+            val data = snapshot.documents.map { it.data }
+            Success(data)
+        } catch (e: Exception) {
+            val failure = getFailure(e)
+            Error(failure)
+        }
+    }
+
+    override suspend fun delete(model: Model, path: String): DatabaseResult {
+        return try {
+            db.document(path).delete().await()
+            Success(model)
+        } catch (e: Exception) {
+            val failure = getFailure(e)
+            Error(failure)
+        }
     }
 
     /**

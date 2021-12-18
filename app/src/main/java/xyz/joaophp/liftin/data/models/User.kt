@@ -1,27 +1,27 @@
 package xyz.joaophp.liftin.data.models
 
-import xyz.joaophp.liftin.utils.Either
-import xyz.joaophp.liftin.utils.Error
-import xyz.joaophp.liftin.utils.Success
-import xyz.joaophp.liftin.utils.failures.Failure
-import xyz.joaophp.liftin.utils.failures.ModelFailure
+import xyz.joaophp.liftin.utils.ConversionException
 
 data class User(
     val uid: String,
-) : Model {
+) : Model() {
+
+    companion object {
+        fun fromMap(map: Map<String, Any>): Model {
+            try {
+                return User(uid = map["uid"] as String)
+            } catch (e: Exception) {
+                throw ConversionException()
+            }
+        }
+    }
 
     override fun toMap(): HashMap<String, Any> {
         return hashMapOf("uid" to uid)
     }
 
-    override fun fromMap(map: Map<String, Any>): Either<Failure, Model> {
-        return try {
-            Success(
-                User(uid = map["uid"] as String)
-            )
-        } catch (e: Exception) {
-            Error(ModelFailure.FailedConversion(e))
-        }
+    override fun fromMap(map: Map<String, Any>): Model {
+        return Companion.fromMap(map)
     }
 }
 

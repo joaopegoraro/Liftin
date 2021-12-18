@@ -1,11 +1,13 @@
 package xyz.joaophp.liftin.data.services.database
 
 import xyz.joaophp.liftin.data.models.Model
-import xyz.joaophp.liftin.utils.DatabaseCallback
-import xyz.joaophp.liftin.utils.DatabaseGetCallback
+import xyz.joaophp.liftin.utils.DatabaseGetAllResult
+import xyz.joaophp.liftin.utils.DatabaseGetResult
+import xyz.joaophp.liftin.utils.DatabaseResult
 
 interface DatabaseService {
-    fun set(model: Model, path: String, cb: DatabaseCallback)
-    fun get(path: String, cb: DatabaseGetCallback)
-    fun delete(model: Model, path: String, cb: DatabaseCallback)
+    suspend fun set(model: Model, path: String): DatabaseResult
+    suspend fun get(path: String): DatabaseGetResult
+    suspend fun getAll(path: String): DatabaseGetAllResult
+    suspend fun delete(model: Model, path: String): DatabaseResult
 }
