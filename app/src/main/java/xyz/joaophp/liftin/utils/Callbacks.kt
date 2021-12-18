@@ -5,12 +5,12 @@ import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.utils.failures.Failure
 
 // Database Callbacks
-typealias DatabaseCallback = ((Either<Failure, Model>) -> Unit)?
-typealias DatabaseGetCallback = ((Either<Failure, Map<String, Any>>) -> Unit)?
+typealias DatabaseCallback = (Either<Failure, Model>) -> Unit
+typealias DatabaseGetCallback = (Either<Failure, Map<String, Any>>) -> Unit
 
 // Storage Callbacks
-typealias StorageUploadCallback = ((Either<Failure, Unit>) -> Unit)?
-typealias StorageDownloadCallback = ((Either<Failure, ByteArray>) -> Unit)?
+typealias StorageUploadCallback = (Either<Failure, Unit>) -> Unit
+typealias StorageDownloadCallback = (Either<Failure, ByteArray>) -> Unit
 
 // Authentication Callbacks
-typealias AuthCallback = ((Either<Failure, User>) -> Unit)?
+typealias AuthCallback = (Either<Failure, User>) -> Unit

@@ -15,9 +15,9 @@ class DatabaseServiceImpl(
 
     override fun set(model: Model, path: String, cb: DatabaseCallback) {
         db.document(path).set(model.toMap())
-            .addOnSuccessListener { cb?.invoke(Success(model)) }
+            .addOnSuccessListener { cb(Success(model)) }
             .addOnFailureListener { e ->
-                cb?.invoke(Error(getFailure(e)))
+                cb(Error(getFailure(e)))
             }
     }
 
@@ -25,17 +25,17 @@ class DatabaseServiceImpl(
         db.document(path).get()
             .addOnSuccessListener { doc ->
                 val data = doc.data ?: mapOf()
-                cb?.invoke(Success(data))
+                cb(Success(data))
             }.addOnFailureListener { e ->
-                cb?.invoke(Error(getFailure(e)))
+                cb(Error(getFailure(e)))
             }
     }
 
     override fun delete(model: Model, path: String, cb: DatabaseCallback) {
         db.document(path).delete()
-            .addOnSuccessListener { cb?.invoke(Success(model)) }
+            .addOnSuccessListener { cb(Success(model)) }
             .addOnFailureListener { e ->
-                cb?.invoke(Error(getFailure(e)))
+                cb(Error(getFailure(e)))
             }
     }
 

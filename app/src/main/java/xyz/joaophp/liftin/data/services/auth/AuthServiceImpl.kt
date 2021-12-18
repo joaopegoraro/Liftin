@@ -47,10 +47,10 @@ class AuthServiceImpl(
 
     private fun handleTask(task: Task<AuthResult>, cb: AuthCallback) {
         if (task.isSuccessful) {
-            cb?.invoke(getCurrentUser())
+            cb(getCurrentUser())
         } else {
             val failure = getFailure(task.exception)
-            cb?.invoke(Error(failure))
+            cb(Error(failure))
         }
     }
 

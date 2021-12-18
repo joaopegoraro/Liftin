@@ -52,6 +52,7 @@ class AuthServiceTest : BaseTest() {
 
         // Set up failed task mock
         every { failureTask.isSuccessful } returns false
+        every { failureTask.exception } returns Exception()
         every { failureTask.addOnCompleteListener(capture(slot)) } answers {
             slot.captured.onComplete(failureTask)
             failureTask
