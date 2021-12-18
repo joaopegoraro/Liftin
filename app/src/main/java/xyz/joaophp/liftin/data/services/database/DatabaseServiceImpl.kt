@@ -6,12 +6,13 @@ import kotlinx.coroutines.tasks.await
 import xyz.joaophp.liftin.data.models.Model
 import xyz.joaophp.liftin.utils.*
 import xyz.joaophp.liftin.utils.failures.DatabaseFailure
+import xyz.joaophp.liftin.utils.failures.Failure
 
 class DatabaseServiceImpl(
     private val db: FirebaseFirestore
 ) : DatabaseService {
 
-    override suspend fun set(model: Model, path: String): DatabaseResult {
+    override suspend fun set(model: Model, path: String): Either<Failure, Model> {
         return try {
             db.document(path).set(model.toMap()).await()
             Success(model)
@@ -43,7 +44,7 @@ class DatabaseServiceImpl(
         }
     }
 
-    override suspend fun delete(model: Model, path: String): DatabaseResult {
+    override suspend fun delete(model: Model, path: String): Either<Failure, Model> {
         return try {
             db.document(path).delete().await()
             Success(model)

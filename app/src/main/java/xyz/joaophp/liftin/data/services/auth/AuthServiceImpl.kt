@@ -1,9 +1,8 @@
 package xyz.joaophp.liftin.data.services.auth
 
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.*
+import kotlinx.coroutines.tasks.await
 import xyz.joaophp.liftin.data.models.User
-import xyz.joaophp.liftin.utils.AuthCallback
 import xyz.joaophp.liftin.utils.Either
 import xyz.joaophp.liftin.utils.Error
 import xyz.joaophp.liftin.utils.Success
@@ -15,42 +14,51 @@ class AuthServiceImpl(
 ) : AuthService {
 
     override fun getCurrentUser(): Either<Failure, User> {
-        val user = firebaseAuth.currentUser ?: return Error(AuthFailure.NoCurrentUser)
-        return Success(User(user.uid))
-    }
-
-    override fun register(email: String, password: String, cb: AuthCallback) {
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task -> handleTask(task, cb) }
-    }
-
-    override fun signIn(email: String, password: String, cb: AuthCallback) {
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task -> handleTask(task, cb) }
-    }
-
-    override fun signInAnonymously(cb: AuthCallback) {
-        firebaseAuth.signInAnonymously()
-            .addOnCompleteListener { task -> handleTask(task, cb) }
-    }
-
-    override fun signOut(): Either<Failure, Unit> {
         try {
-            firebaseAuth.signOut().run {
-                return if (firebaseAuth.currentUser == null) Success(Unit)
-                else Error(AuthFailure.CantSignOut())
-            }
+            val user = firebaseAuth.currentUser ?: return Error(AuthFailure.NoCurrentUser)
+            return Success(User(user.uid))
         } catch (e: Exception) {
-            return Error(AuthFailure.CantSignOut(e))
+            return Error(AuthFailure.CantRetrieveUser(e))
         }
     }
 
-    private fun handleTask(task: Task<AuthResult>, cb: AuthCallback) {
-        if (task.isSuccessful) {
-            cb(getCurrentUser())
-        } else {
-            val failure = getFailure(task.exception)
-            cb(Error(failure))
+    override suspend fun register(email: String, password: String): Either<Failure, User> {
+        return try {
+            firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+            getCurrentUser()
+        } catch (e: Exception) {
+            val failure = getFailure(e)
+            Error(failure)
+        }
+    }
+
+    override suspend fun signIn(email: String, password: String): Either<Failure, User> {
+        return try {
+            firebaseAuth.signInWithEmailAndPassword(email, password).await()
+            getCurrentUser()
+        } catch (e: Exception) {
+            val failure = getFailure(e)
+            Error(failure)
+        }
+    }
+
+    override suspend fun signInAnonymously(): Either<Failure, User> {
+        return try {
+            firebaseAuth.signInAnonymously().await()
+            getCurrentUser()
+        } catch (e: Exception) {
+            val failure = getFailure(e)
+            Error(failure)
+        }
+    }
+
+    override fun signOut(): Either<Failure, Unit> {
+        return try {
+            firebaseAuth.signOut()
+            if (firebaseAuth.currentUser == null) Success(Unit)
+            else Error(AuthFailure.CantSignOut())
+        } catch (e: Exception) {
+            Error(AuthFailure.CantSignOut(e))
         }
     }
 

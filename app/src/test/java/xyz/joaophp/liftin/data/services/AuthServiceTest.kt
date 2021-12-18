@@ -1,37 +1,31 @@
 package xyz.joaophp.liftin.data.services
 
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
+import io.mockk.mockkStatic
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import xyz.joaophp.liftin.data.services.auth.AuthService
 import xyz.joaophp.liftin.data.services.auth.AuthServiceImpl
-import xyz.joaophp.liftin.utils.AuthCallback
 import xyz.joaophp.liftin.utils.Error
 import xyz.joaophp.liftin.utils.Success
 
 
-class AuthServiceTest : BaseTest() {
+class AuthServiceTest {
 
     private lateinit var authService: AuthService
-
-    // Mock Task
-    private val slot = slot<OnCompleteListener<AuthResult>>()
-    private val successTask = mockk<Task<AuthResult>>()
-    private val failureTask = mockk<Task<AuthResult>>()
 
     // Mock FirebaseAuth
     private val mockedFirebaseAuth = mockk<FirebaseAuth>()
     private val mockedFirebaseUser = mockk<FirebaseUser>()
-
-    // MockCallback
-    private val mockedAuthCallback: AuthCallback = { it.mockFold() }
+    private val mockedResult = mockk<AuthResult>()
 
     // Constants
     companion object {
@@ -43,20 +37,8 @@ class AuthServiceTest : BaseTest() {
     @Before
     fun setUp() {
 
-        // Set up successful task mock
-        every { successTask.isSuccessful } returns true
-        every { successTask.addOnCompleteListener(capture(slot)) } answers {
-            slot.captured.onComplete(successTask)
-            successTask
-        }
-
-        // Set up failed task mock
-        every { failureTask.isSuccessful } returns false
-        every { failureTask.exception } returns Exception()
-        every { failureTask.addOnCompleteListener(capture(slot)) } answers {
-            slot.captured.onComplete(failureTask)
-            failureTask
-        }
+        // Mock await() method
+        mockkStatic("kotlinx.coroutines.tasks.TasksKt") // IMPORTANT!
 
         // Setup FirebaseAuth mock
         every { mockedFirebaseAuth.currentUser } returns mockedFirebaseUser
@@ -64,6 +46,14 @@ class AuthServiceTest : BaseTest() {
         every { mockedFirebaseAuth.signOut() } returns Unit
 
         authService = AuthServiceImpl(mockedFirebaseAuth)
+    }
+
+    @Test
+    fun getCurrentUserException_test() {
+        every { mockedFirebaseAuth.currentUser } throws Exception()
+
+        val result = authService.getCurrentUser()
+        assert(result is Error)
     }
 
     @Test
@@ -80,66 +70,71 @@ class AuthServiceTest : BaseTest() {
         assert(result is Success)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun registerFailure_test() {
-        every {
-            mockedFirebaseAuth.createUserWithEmailAndPassword(email, password)
-        } returns failureTask
+    fun registerFailure_test() = runTest {
+        coEvery {
+            mockedFirebaseAuth.createUserWithEmailAndPassword(email, password).await()
+        } throws Exception()
 
 
-        authService.register(email, password, mockedAuthCallback)
-        assert(testState == TestState.FAILED)
+        val result = authService.register(email, password)
+        assert(result is Error)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun registerSuccess_test() {
-        every {
-            mockedFirebaseAuth.createUserWithEmailAndPassword(email, password)
-        } returns successTask
+    fun registerSuccess_test() = runTest {
+        coEvery {
+            mockedFirebaseAuth.createUserWithEmailAndPassword(email, password).await()
+        } returns mockedResult
 
-
-        authService.register(email, password, mockedAuthCallback)
-        assert(testState == TestState.SUCCESSFUL)
+        val result = authService.register(email, password)
+        assert(result is Success)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun signInSuccess_test() {
-        every {
-            mockedFirebaseAuth.signInWithEmailAndPassword(email, password)
-        } returns successTask
+    fun signInFailure_test() = runTest {
+        coEvery {
+            mockedFirebaseAuth.signInWithEmailAndPassword(email, password).await()
+        } throws Exception()
 
-        authService.signIn(email, password, mockedAuthCallback)
-        assert(testState == TestState.SUCCESSFUL)
+        val result = authService.signIn(email, password)
+        assert(result is Error)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun signInFailure_test() {
-        every {
-            mockedFirebaseAuth.signInWithEmailAndPassword(email, password)
-        } returns failureTask
+    fun signInSuccess_test() = runTest {
+        coEvery {
+            mockedFirebaseAuth.signInWithEmailAndPassword(email, password).await()
+        } returns mockedResult
 
-        authService.signIn(email, password, mockedAuthCallback)
-        assert(testState == TestState.FAILED)
+        val result = authService.signIn(email, password)
+        assert(result is Success)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun signInAnonymouslyFailure_test() {
-        every {
-            mockedFirebaseAuth.signInAnonymously()
-        } returns failureTask
+    fun signInAnonymouslyFailure_test() = runTest {
+        coEvery {
+            mockedFirebaseAuth.signInAnonymously().await()
+        } throws Exception()
 
-        authService.signInAnonymously(mockedAuthCallback)
-        assert(testState == TestState.FAILED)
+        val result = authService.signInAnonymously()
+        assert(result is Error)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun signInAnonymouslySuccess_test() {
-        every {
-            mockedFirebaseAuth.signInAnonymously()
-        } returns successTask
+    fun signInAnonymouslySuccess_test() = runTest {
+        coEvery {
+            mockedFirebaseAuth.signInAnonymously().await()
+        } returns mockedResult
 
-        authService.signInAnonymously(mockedAuthCallback)
-        assert(testState == TestState.SUCCESSFUL)
+        val result = authService.signInAnonymously()
+        assert(result is Success)
     }
 
     @Test

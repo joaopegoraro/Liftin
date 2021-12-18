@@ -42,7 +42,8 @@ class DatabaseServiceTest {
 
     @Before
     fun setUp() {
-        mockkStatic("kotlinx.coroutines.tasks.TasksKt")
+        // Mock await() method
+        mockkStatic("kotlinx.coroutines.tasks.TasksKt") // IMPORTANT!
         every { mockedSnapshot.data } returns mapOf()
         dbService = DatabaseServiceImpl(mockedFirestore)
     }

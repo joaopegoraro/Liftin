@@ -6,6 +6,7 @@ sealed class AuthFailure(e: Exception? = null) : Failure(e) {
     object InvalidCredentials : AuthFailure()
     object InvalidUser : AuthFailure()
     object EmailTaken : AuthFailure()
+    class CantRetrieveUser(e: Exception?) : AuthFailure(e)
     class CantSignOut(e: Exception? = null) : AuthFailure(e)
     class WeakPassword(val reason: String?) : AuthFailure()
     class Unknown(e: Exception?) : AuthFailure(e)
