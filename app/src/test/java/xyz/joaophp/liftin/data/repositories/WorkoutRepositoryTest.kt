@@ -1,4 +1,4 @@
-package xyz.joaophp.liftin.data.repositories;
+package xyz.joaophp.liftin.data.repositories
 
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -28,7 +28,6 @@ class WorkoutRepositoryTest {
 
     // Mock workout
     private val workout = Workout(workoutName, workoutDescricao, Timestamp(workoutTimestamp))
-    private val workouts = listOf(workout, workout, workout)
 
     // Workout Path
     private val singlePath = "users/$userUid/workouts/${workout.timestamp}-${workout.nome}"
@@ -43,9 +42,6 @@ class WorkoutRepositoryTest {
         private const val workoutName = 1
         private const val workoutDescricao = "esse treino é bem legal"
         private const val workoutTimestamp: Long = 1639848203
-
-        // Paths
-        private const val path = "users/$userUid/workouts"
     }
 
     @Before
