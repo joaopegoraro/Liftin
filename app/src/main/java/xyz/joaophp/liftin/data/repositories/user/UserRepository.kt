@@ -7,6 +7,7 @@ import xyz.joaophp.liftin.utils.failures.Failure
 interface UserRepository {
 
     fun getCurrentUser(): Either<Failure, User>
+    fun isUserLoggedIn(): Either<Failure, Boolean>
     suspend fun register(email: String, password: String): Either<Failure, User>
     suspend fun signIn(email: String, password: String): Either<Failure, User>
     suspend fun signInAnonymously(): Either<Failure, User>

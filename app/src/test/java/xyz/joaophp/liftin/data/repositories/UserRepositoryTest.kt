@@ -28,6 +28,7 @@ class UserRepositoryTest {
 
     // Mock error
     private val error = Error<Failure, User>(AuthFailure.NoCurrentUser)
+    private val isUserLoggedError = Error<Failure, User>(AuthFailure.CantRetrieveUser(Exception()))
     private val signOutError = Error<Failure, Unit>(AuthFailure.NoCurrentUser)
 
     // Constants
@@ -63,6 +64,30 @@ class UserRepositoryTest {
         every { mockAuthService.getCurrentUser() } returns Success(user)
 
         val result = userRepository.getCurrentUser()
+        assert(result is Success)
+    }
+
+    @Test
+    fun isUserLoggedInFailure_test() {
+        every { mockAuthService.getCurrentUser() } returns isUserLoggedError
+
+        val result = userRepository.isUserLoggedIn()
+        assert(result is Error)
+    }
+
+    @Test
+    fun isUserLoggedInSuccessFalse_test() {
+        every { mockAuthService.getCurrentUser() } returns error
+
+        val result = userRepository.isUserLoggedIn()
+        assert(result is Success)
+    }
+
+    @Test
+    fun isUserLoggedInSuccessTrue_test() {
+        every { mockAuthService.getCurrentUser() } returns Success(user)
+
+        val result = userRepository.isUserLoggedIn()
         assert(result is Success)
     }
 
