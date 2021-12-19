@@ -6,7 +6,7 @@ import xyz.joaophp.liftin.utils.failures.Failure
 
 interface StorageService {
 
-    suspend fun upload(path: String, fileUri: Uri): Either<Failure, Unit>
+    suspend fun upload(path: String, fileUri: Uri): Either<Failure, Uri?>
     suspend fun download(path: String): Either<Failure, ByteArray>
     suspend fun delete(path: String): Either<Failure, Unit>
 }

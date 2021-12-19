@@ -20,11 +20,11 @@ class StorageServiceImpl(
 
     private val storageRef = firebaseStorage.reference
 
-    override suspend fun upload(path: String, fileUri: Uri): Either<Failure, Unit> {
+    override suspend fun upload(path: String, fileUri: Uri): Either<Failure, Uri?> {
         return try {
             val ref = storageRef.child(path)
-            ref.putFile(fileUri).await()
-            Success(Unit)
+            val uploadUri = ref.putFile(fileUri).await().uploadSessionUri
+            Success(uploadUri)
         } catch (e: Exception) {
             val failure = getFailure(e)
             Error(failure)

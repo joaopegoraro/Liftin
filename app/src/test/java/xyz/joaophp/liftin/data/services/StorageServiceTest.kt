@@ -67,7 +67,7 @@ class StorageServiceTest {
     @ExperimentalCoroutinesApi
     @Test
     fun uploadSuccess_test() = runTest {
-        coEvery { imagesRef.putFile(mockUri).await() } returns mockSnapshot
+        coEvery { imagesRef.putFile(mockUri).await().uploadSessionUri } returns mockUri
 
         val result = storageService.upload(imageRefPath, mockUri)
         assert(result is Success)
