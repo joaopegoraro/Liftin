@@ -33,7 +33,7 @@ class StorageServiceTest {
 
     // Mock returns
     private val mockSnapshot = mockk<UploadTask.TaskSnapshot>()
-    private val mockByteArray = mockk<ByteArray>()
+    private val mockByteArray = byteArrayOf()
 
 
     // Constants
