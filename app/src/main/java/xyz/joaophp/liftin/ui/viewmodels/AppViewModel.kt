@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import xyz.joaophp.liftin.ui.state.AppState
 
 // App wide ViewModel for managing app state
-class MainViewModel : ViewModel() {
+class AppViewModel : ViewModel() {
 
     private val _appState = MutableStateFlow<AppState?>(null)
     val appState = _appState.asStateFlow()
