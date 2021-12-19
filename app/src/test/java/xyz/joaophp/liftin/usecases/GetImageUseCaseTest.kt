@@ -7,7 +7,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import xyz.joaophp.liftin.data.models.Exercise
-import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.data.repositories.image.ImageRepository
 import xyz.joaophp.liftin.usecases.images.GetImageUseCase
 import xyz.joaophp.liftin.usecases.images.GetImageUseCaseImpl
@@ -23,9 +22,6 @@ class GetImageUseCaseTest {
     // Mock ImageRepository
     private val mockImageRepository = mockk<ImageRepository>()
 
-    // Mock Exercise
-    private val user = User(uid)
-
     // Mock exercise
     private val exercise = Exercise(nome, imageUrl, observacoes)
 
@@ -37,7 +33,6 @@ class GetImageUseCaseTest {
         private const val nome = 1
         private const val imageUrl = "imagem/imagem.jpg"
         private const val observacoes = "esse exercício é bem legal"
-        private const val uid = "uid"
     }
 
     @Before
