@@ -8,8 +8,9 @@ import xyz.joaophp.liftin.utils.Error
 import xyz.joaophp.liftin.utils.Success
 import xyz.joaophp.liftin.utils.failures.Failure
 import xyz.joaophp.liftin.utils.failures.ImageFailure
+import javax.inject.Inject
 
-class CreateImageUseCaseImpl(
+class CreateImageUseCaseImpl @Inject constructor(
     private val imageRepository: ImageRepository
 ) : CreateImageUseCase {
 

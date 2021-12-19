@@ -7,8 +7,9 @@ import xyz.joaophp.liftin.utils.Error
 import xyz.joaophp.liftin.utils.Success
 import xyz.joaophp.liftin.utils.failures.Failure
 import xyz.joaophp.liftin.utils.failures.LoginFailure
+import javax.inject.Inject
 
-class RegisterUseCaseImpl(
+class RegisterUseCaseImpl @Inject constructor(
     private val userRepository: UserRepository
 ) : RegisterUseCase {
 

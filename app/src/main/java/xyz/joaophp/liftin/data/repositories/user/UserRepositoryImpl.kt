@@ -7,8 +7,9 @@ import xyz.joaophp.liftin.utils.Error
 import xyz.joaophp.liftin.utils.Success
 import xyz.joaophp.liftin.utils.failures.AuthFailure
 import xyz.joaophp.liftin.utils.failures.Failure
+import javax.inject.Inject
 
-class UserRepositoryImpl(
+class UserRepositoryImpl @Inject constructor(
     private val authService: AuthService
 ) : UserRepository {
 

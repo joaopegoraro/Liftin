@@ -9,8 +9,9 @@ import xyz.joaophp.liftin.utils.Error
 import xyz.joaophp.liftin.utils.Success
 import xyz.joaophp.liftin.utils.failures.Failure
 import xyz.joaophp.liftin.utils.failures.StorageFailure
+import javax.inject.Inject
 
-class StorageServiceImpl(
+class StorageServiceImpl @Inject constructor(
     firebaseStorage: FirebaseStorage
 ) : StorageService {
 

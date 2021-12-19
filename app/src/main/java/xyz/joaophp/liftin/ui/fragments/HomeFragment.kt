@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import xyz.joaophp.liftin.MainActivity
@@ -21,6 +22,7 @@ import xyz.joaophp.liftin.ui.viewmodels.HomeViewModel
 import xyz.joaophp.liftin.utils.failures.AuthFailure
 import xyz.joaophp.liftin.utils.failures.Failure
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private val appViewModel: AppViewModel by activityViewModels()

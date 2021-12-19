@@ -10,8 +10,9 @@ import xyz.joaophp.liftin.data.models.Model
 import xyz.joaophp.liftin.utils.*
 import xyz.joaophp.liftin.utils.failures.DatabaseFailure
 import xyz.joaophp.liftin.utils.failures.Failure
+import javax.inject.Inject
 
-class DatabaseServiceImpl(
+class DatabaseServiceImpl @Inject constructor(
     private val db: FirebaseFirestore
 ) : DatabaseService {
 

@@ -8,8 +8,9 @@ import xyz.joaophp.liftin.utils.Error
 import xyz.joaophp.liftin.utils.failures.Failure
 import xyz.joaophp.liftin.utils.failures.ImageFailure
 import java.util.*
+import javax.inject.Inject
 
-class ImageRepositoryImpl(
+class ImageRepositoryImpl @Inject constructor(
     private val storageService: StorageService
 ) : ImageRepository {
 

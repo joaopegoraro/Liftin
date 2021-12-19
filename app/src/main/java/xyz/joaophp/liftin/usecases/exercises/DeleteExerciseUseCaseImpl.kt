@@ -6,8 +6,9 @@ import xyz.joaophp.liftin.data.models.Workout
 import xyz.joaophp.liftin.data.repositories.exercise.ExerciseRepository
 import xyz.joaophp.liftin.utils.Either
 import xyz.joaophp.liftin.utils.failures.Failure
+import javax.inject.Inject
 
-class DeleteExerciseUseCaseImpl(
+class DeleteExerciseUseCaseImpl @Inject constructor(
     private val exerciseRepository: ExerciseRepository
 ) : DeleteExerciseUseCase {
 

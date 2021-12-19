@@ -3,8 +3,9 @@ package xyz.joaophp.liftin.usecases.auth
 import xyz.joaophp.liftin.data.repositories.user.UserRepository
 import xyz.joaophp.liftin.utils.Either
 import xyz.joaophp.liftin.utils.failures.Failure
+import javax.inject.Inject
 
-class SignOutUseCaseImpl(
+class SignOutUseCaseImpl @Inject constructor(
     private val userRepository: UserRepository
 ) : SignOutUseCase {
 

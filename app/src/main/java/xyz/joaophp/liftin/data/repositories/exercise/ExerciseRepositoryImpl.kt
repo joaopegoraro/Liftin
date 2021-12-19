@@ -13,8 +13,9 @@ import xyz.joaophp.liftin.utils.Success
 import xyz.joaophp.liftin.utils.failures.ExerciseFailure
 import xyz.joaophp.liftin.utils.failures.Failure
 import xyz.joaophp.liftin.utils.failures.ModelFailure
+import javax.inject.Inject
 
-class ExerciseRepositoryImpl(
+class ExerciseRepositoryImpl @Inject constructor(
     private val databaseService: DatabaseService
 ) : ExerciseRepository {
 

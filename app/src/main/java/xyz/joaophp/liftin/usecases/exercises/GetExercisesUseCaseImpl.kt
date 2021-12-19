@@ -8,8 +8,9 @@ import xyz.joaophp.liftin.data.models.Workout
 import xyz.joaophp.liftin.data.repositories.exercise.ExerciseRepository
 import xyz.joaophp.liftin.utils.Either
 import xyz.joaophp.liftin.utils.failures.Failure
+import javax.inject.Inject
 
-class GetExercisesUseCaseImpl(
+class GetExercisesUseCaseImpl @Inject constructor(
     private val exerciseRepository: ExerciseRepository
 ) : GetExercisesUseCase {
 
