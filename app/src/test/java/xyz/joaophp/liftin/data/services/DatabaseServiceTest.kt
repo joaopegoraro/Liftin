@@ -1,6 +1,7 @@
 package xyz.joaophp.liftin.data.services
 
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import io.mockk.coEvery
@@ -30,6 +31,7 @@ class DatabaseServiceTest {
     private val mockedFirestore = mockk<FirebaseFirestore>()
     private val mockedSnapshot = mockk<DocumentSnapshot>()
     private val mockedGetAllSnapshot = mockk<QuerySnapshot>()
+    private val mockedListener = mockk<EventListener<QuerySnapshot>>()
 
     // Mock Exception
     private val exception = Exception()
@@ -83,25 +85,6 @@ class DatabaseServiceTest {
         coEvery { mockedFirestore.document(path).get().await() } returns mockedSnapshot
 
         val result = dbService.get(path)
-        assert(result is Success)
-    }
-
-    @ExperimentalCoroutinesApi
-    @Test
-    fun getAllFailure_test() = runTest {
-        coEvery { mockedFirestore.collection(path).get().await() } throws exception
-
-        val result = dbService.getAll(path)
-        assert(result is Error)
-    }
-
-    @ExperimentalCoroutinesApi
-    @Test
-    fun getAllSuccess_test() = runTest {
-        coEvery { mockedFirestore.collection(path).get().await() } returns mockedGetAllSnapshot
-        every { mockedGetAllSnapshot.documents } returns listOf(mockedSnapshot)
-
-        val result = dbService.getAll(path)
         assert(result is Success)
     }
 

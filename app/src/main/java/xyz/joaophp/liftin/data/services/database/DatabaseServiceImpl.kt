@@ -2,6 +2,9 @@ package xyz.joaophp.liftin.data.services.database
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import xyz.joaophp.liftin.data.models.Model
 import xyz.joaophp.liftin.utils.*
@@ -33,17 +36,6 @@ class DatabaseServiceImpl(
         }
     }
 
-    override suspend fun getAll(path: String): DatabaseGetAllResult {
-        return try {
-            val snapshot = db.collection(path).get().await()
-            val data = snapshot.documents.map { it.data }
-            Success(data)
-        } catch (e: Exception) {
-            val failure = getFailure(e)
-            Error(failure)
-        }
-    }
-
     override suspend fun delete(model: Model, path: String): Either<Failure, Model> {
         return try {
             db.document(path).delete().await()
@@ -51,6 +43,22 @@ class DatabaseServiceImpl(
         } catch (e: Exception) {
             val failure = getFailure(e)
             Error(failure)
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    override fun getAll(path: String): DatabaseGetAllResult {
+        return callbackFlow {
+            val listener = db.collection(path).addSnapshotListener { data, e ->
+                if (e != null) {
+                    val failure = getFailure(e)
+                    trySend(Error(failure))
+                } else {
+                    val result = data?.documents?.map { it.data }
+                    trySend(Success(result))
+                }
+            }
+            awaitClose { listener.remove() }
         }
     }
 
