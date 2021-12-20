@@ -17,6 +17,7 @@ import xyz.joaophp.liftin.databinding.FragmentAuthBinding
 import xyz.joaophp.liftin.ui.state.AppState
 import xyz.joaophp.liftin.ui.viewmodels.AppViewModel
 import xyz.joaophp.liftin.ui.viewmodels.AuthViewModel
+import xyz.joaophp.liftin.utils.Either
 import xyz.joaophp.liftin.utils.failures.AuthFailure
 import xyz.joaophp.liftin.utils.failures.Failure
 
@@ -28,6 +29,8 @@ class AuthFragment : Fragment() {
     private val appViewModel: AppViewModel by activityViewModels()
     private val viewModel: AuthViewModel by viewModels()
 
+    // Lifecycle methods
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,45 +38,9 @@ class AuthFragment : Fragment() {
     ): View? {
         binding = FragmentAuthBinding.inflate(inflater, container, false)
 
-        binding?.apply {
-
-            btnSignIn.setOnClickListener {
-                lifecycleScope.launchWhenCreated {
-                    val email = tfEmail.text?.toString() ?: "jaime"
-                    val password = tfPassword.text?.toString() ?: "jaime"
-
-                    loading.show()
-                    root.alpha = 0.5f
-
-                    viewModel.login(email, password).fold(
-                        ifError = { failure -> handleFailure(failure) },
-                        ifSuccess = { user -> navigateToHomeFragment(user) }
-                    )
-
-                    root.alpha = 1f
-                    loading.hide()
-                }
-            }
-
-            btnRegister.setOnClickListener {
-                lifecycleScope.launchWhenCreated {
-                    val email = tfEmail.text?.toString() ?: "jaime"
-                    val password = tfPassword.text?.toString() ?: "jaime"
-
-                    loading.show()
-                    root.alpha = 0.5f
-
-                    viewModel.register(email, password).fold(
-                        ifError = { failure -> handleFailure(failure) },
-                        ifSuccess = { user -> navigateToHomeFragment(user) }
-                    )
-
-                    root.alpha = 1f
-                    loading.hide()
-                }
-
-            }
-        }
+        // Click listeners
+        binding?.btnSignIn?.setOnClickListener { authenticate(viewModel::login) }
+        binding?.btnRegister?.setOnClickListener { authenticate(viewModel::register) }
 
         return binding?.root
     }
@@ -81,6 +48,41 @@ class AuthFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         binding = null
+    }
+
+    // Action methods
+
+    private fun authenticate(
+        authMethod: suspend (email: String, password: String) -> Either<Failure, User>
+    ) {
+        binding?.run {
+            lifecycleScope.launchWhenCreated {
+
+                // Get email and password from input fields
+                val email = tfEmail.text?.toString()
+                val password = tfPassword.text?.toString()
+
+                // Check if credentials are not empty or null
+                if (email == null || password == null) {
+                    handleFailure(AuthFailure.EmptyCredentials)
+                    return@launchWhenCreated
+                }
+
+                // Show loading animation
+                loading.show()
+                root.alpha = 0.5f // lowers opacity during loading
+
+                // Authenticate
+                authMethod(email, password).fold(
+                    ifError = { failure -> handleFailure(failure) },
+                    ifSuccess = { user -> navigateToHomeFragment(user) }
+                )
+
+                // Hide loading animation
+                root.alpha = 1f // opacity goes back to normal
+                loading.hide()
+            }
+        }
     }
 
     // Navigation methods
@@ -94,6 +96,8 @@ class AuthFragment : Fragment() {
 
     private fun handleFailure(failure: Failure) {
         when (failure) {
+            is AuthFailure.EmptyCredentials ->
+                displayError("The email and password fields can't be empty")
             is AuthFailure.BadEmail ->
                 displayError("The email is invalid")
             is AuthFailure.InvalidCredentials ->
