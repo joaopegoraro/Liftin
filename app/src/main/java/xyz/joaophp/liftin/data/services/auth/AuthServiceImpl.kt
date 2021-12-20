@@ -67,10 +67,12 @@ class AuthServiceImpl @Inject constructor(
         return if (e is FirebaseAuthException) {
             if (e.errorCode == "auth/invalid-email") return AuthFailure.BadEmail
             when (e) {
+                // FirebaseAuthWeakPasswordException must come before
+                // FirebaseAuthInvalidCredentialsException because it inherits from it
+                is FirebaseAuthWeakPasswordException -> AuthFailure.WeakPassword(e.reason)
                 is FirebaseAuthInvalidCredentialsException -> AuthFailure.InvalidCredentials
                 is FirebaseAuthInvalidUserException -> AuthFailure.InvalidUser
                 is FirebaseAuthUserCollisionException -> AuthFailure.EmailTaken
-                is FirebaseAuthWeakPasswordException -> AuthFailure.WeakPassword(e.reason)
                 else -> AuthFailure.Unknown(e)
             }
         } else {
