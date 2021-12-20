@@ -68,6 +68,13 @@ class HomeFragment : Fragment() {
         return binding?.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
+    }
+
+    // Options menu methods
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_home, menu)
         super.onCreateOptionsMenu(menu, inflater)
@@ -121,7 +128,7 @@ class HomeFragment : Fragment() {
     // Navigation methods
 
     private fun navigateToAuthFragment() {
-        appViewModel.updateState(AppState.InAuth(null))
+        appViewModel.updateState(AppState.InAuth)
         findNavController().navigate(R.id.action_homeFragment_to_authFragment)
     }
 
@@ -144,7 +151,7 @@ class HomeFragment : Fragment() {
                 displayError("There was a problem retrieving authentication information")
                 navigateToAuthFragment()
             }
-            else -> displayError("An unexpected error has occured\n" + failure.e)
+            else -> displayError("An unexpected error has occurred\n" + failure.e)
         }
     }
 
