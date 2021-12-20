@@ -1,3 +1,10 @@
 <resources>
+    <!-- Titles -->
     <string name="app_name">Liftin</string>
+    <string name="home_title">Home</string>
+    <string name="auth_title">Login</string>
+    <string name="add_workout_title">Add Workout</string>
+    <string name="workout_title">Workout</string>
+    <string name="add_exercise_title">Add Exercise</string>
+    <string name="exercise_title">Exercise</string>
 </resources>

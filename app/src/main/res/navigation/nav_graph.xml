@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/authFragment"
         android:name="xyz.joaophp.liftin.ui.fragments.AuthFragment"
-        android:label="AuthFragment">
+        android:label="@string/auth_title">
         <action
             android:id="@+id/action_authFragment_to_homeFragment"
             app:destination="@id/homeFragment"
@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="xyz.joaophp.liftin.ui.fragments.HomeFragment"
-        android:label="HomeFragment">
+        android:label="@string/home_title">
         <action
             android:id="@+id/action_homeFragment_to_authFragment"
             app:destination="@id/authFragment"
@@ -33,11 +33,11 @@
     <fragment
         android:id="@+id/addWorkoutFragment"
         android:name="xyz.joaophp.liftin.ui.fragments.AddWorkoutFragment"
-        android:label="AddWorkoutFragment"/>
+        android:label="@string/add_workout_title" />
     <fragment
         android:id="@+id/workoutFragment"
         android:name="xyz.joaophp.liftin.ui.fragments.WorkoutFragment"
-        android:label="WorkoutFragment">
+        android:label="@string/workout_title">
         <action
             android:id="@+id/action_workoutFragment_to_addExerciseFragment"
             app:destination="@id/addExerciseFragment" />
@@ -48,9 +48,9 @@
     <fragment
         android:id="@+id/addExerciseFragment"
         android:name="xyz.joaophp.liftin.ui.fragments.AddExerciseFragment"
-        android:label="AddExerciseFragment"/>
+        android:label="@string/add_exercise_title" />
     <fragment
         android:id="@+id/exerciseFragment"
         android:name="xyz.joaophp.liftin.ui.fragments.ExerciseFragment"
-        android:label="ExerciseFragment"/>
+        android:label="@string/exercise_title" />
 </navigation>
