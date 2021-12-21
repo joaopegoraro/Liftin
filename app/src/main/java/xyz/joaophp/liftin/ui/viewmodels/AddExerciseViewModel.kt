@@ -29,7 +29,7 @@ class AddExerciseViewModel @Inject constructor(
         return createExerciseUseCase(user, workout, exercise)
     }
 
-    suspend fun createImage(user: User, contentUri: Uri): Either<Failure, Uri> {
+    suspend fun createImage(user: User, contentUri: Uri): Either<Failure, String> {
         return createImageUseCase(user, contentUri)
     }
 }

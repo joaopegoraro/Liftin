@@ -17,7 +17,7 @@ class ImageRepositoryImpl @Inject constructor(
     // Generates an unique path
     private val path = fun(user: User): String = "images/${user.uid}/${UUID.randomUUID()}"
 
-    override suspend fun saveImage(user: User, fileUri: Uri): Either<Failure, Uri?> {
+    override suspend fun saveImage(user: User, fileUri: Uri): Either<Failure, String> {
         return try {
             val uploadPath = path(user)
             storageService.upload(uploadPath, fileUri)

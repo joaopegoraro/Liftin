@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -131,16 +132,21 @@ class AddExerciseFragment : Fragment() {
         // Create exercise
         lifecycleScope.launchWhenCreated {
             imageUri?.let { uri ->
-                viewModel.createImage(user, uri)
-                viewModel.createExercise(
-                    user,
-                    workout,
-                    nome.toInt(),
-                    observacoes,
-                    uri.toString()
-                ).fold(
+                viewModel.createImage(user, uri).foldAsync(
                     ifError = { failure -> handleFailure(failure) },
-                    ifSuccess = { navigateToHomeFragment() }
+                    ifSuccess = { path ->
+                        Log.d("TESTE", path)
+                        viewModel.createExercise(
+                            user,
+                            workout,
+                            nome.toInt(),
+                            observacoes,
+                            path
+                        ).fold(
+                            ifError = { failure -> handleFailure(failure) },
+                            ifSuccess = { navigateToHomeFragment() }
+                        )
+                    }
                 )
             }
         }

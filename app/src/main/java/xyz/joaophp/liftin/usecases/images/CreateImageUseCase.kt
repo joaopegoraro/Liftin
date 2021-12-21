@@ -7,5 +7,5 @@ import xyz.joaophp.liftin.utils.failures.Failure
 
 interface CreateImageUseCase {
 
-    suspend operator fun invoke(user: User, fileUri: Uri): Either<Failure, Uri>
+    suspend operator fun invoke(user: User, fileUri: Uri): Either<Failure, String>
 }
