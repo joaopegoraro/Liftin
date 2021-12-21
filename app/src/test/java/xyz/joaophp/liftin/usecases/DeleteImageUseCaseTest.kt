@@ -26,7 +26,7 @@ class DeleteImageUseCaseTest {
     private val exercise = Exercise(nome, imageUrl, observacoes)
 
     // Mock error
-    private val error = Error<Failure, Unit>(ImageFailure.FailedUpload(Exception()))
+    private val error = Error<Failure, Unit>(ImageFailure.EmptyField)
 
     // Constants
     companion object {

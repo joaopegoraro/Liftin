@@ -31,7 +31,7 @@ class ImageRepositoryTest {
     private val user = User(uid)
 
     // Mock errors
-    private val uploadError = Error<Failure, Uri?>(StorageFailure.Timeout)
+    private val uploadError = Error<Failure, String>(StorageFailure.Timeout)
     private val downloadError = Error<Failure, ByteArray>(StorageFailure.Timeout)
     private val deleteError = Error<Failure, Unit>(StorageFailure.NotFound)
 
@@ -49,17 +49,8 @@ class ImageRepositoryTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun saveImageExceptionFailure_test() = runTest {
-        coEvery { mockStorageService.upload(uploadPath, mockUri) } throws Exception()
-
-        val result = imageRepository.saveImage(user, mockUri)
-        assert(result is Error)
-    }
-
-    @ExperimentalCoroutinesApi
-    @Test
     fun saveImageFailure_test() = runTest {
-        coEvery { mockStorageService.upload(uploadPath, mockUri) } returns uploadError
+        coEvery { mockStorageService.upload(any(), mockUri) } returns uploadError
 
         val result = imageRepository.saveImage(user, mockUri)
         assert(result is Error)
@@ -68,7 +59,7 @@ class ImageRepositoryTest {
     @ExperimentalCoroutinesApi
     @Test
     fun saveImageSuccess_test() = runTest {
-        coEvery { mockStorageService.upload(any(), mockUri) } returns Success(mockUri)
+        coEvery { mockStorageService.upload(any(), mockUri) } returns Success("success!")
 
         val result = imageRepository.saveImage(user, mockUri)
         assert(result is Success)

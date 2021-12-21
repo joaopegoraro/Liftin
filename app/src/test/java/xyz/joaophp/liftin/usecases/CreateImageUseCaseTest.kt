@@ -30,7 +30,7 @@ class CreateImageUseCaseTest {
     private val mockUri = mockk<Uri>()
 
     // Mock error
-    private val error = Error<Failure, Uri?>(ImageFailure.FailedUpload(Exception()))
+    private val error = Error<Failure, String>(ImageFailure.EmptyField)
 
     // Constants
     companion object {
@@ -53,17 +53,8 @@ class CreateImageUseCaseTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun deleteImageNullFailure_test() = runTest {
-        coEvery { mockImageRepository.saveImage(user, mockUri) } returns Success(null)
-
-        val result = createImageUseCase(user, mockUri)
-        assert(result is Error)
-    }
-
-    @ExperimentalCoroutinesApi
-    @Test
     fun deleteImageSuccess_test() = runTest {
-        coEvery { mockImageRepository.saveImage(user, mockUri) } returns Success(mockUri)
+        coEvery { mockImageRepository.saveImage(user, mockUri) } returns Success("success!")
 
         val result = createImageUseCase(user, mockUri)
         assert(result is Success)

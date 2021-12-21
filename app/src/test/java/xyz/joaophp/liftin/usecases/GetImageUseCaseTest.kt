@@ -26,7 +26,7 @@ class GetImageUseCaseTest {
     private val exercise = Exercise(nome, imageUrl, observacoes)
 
     // Mock error
-    private val error = Error<Failure, ByteArray>(ImageFailure.FailedUpload(Exception()))
+    private val error = Error<Failure, ByteArray>(ImageFailure.EmptyField)
 
     // Constants
     companion object {
