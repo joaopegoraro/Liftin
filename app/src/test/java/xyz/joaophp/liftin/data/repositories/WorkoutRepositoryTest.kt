@@ -27,7 +27,7 @@ class WorkoutRepositoryTest {
     private val user = User(userUid)
 
     // Mock workout
-    private val workout = Workout(workoutName, workoutDescricao, Timestamp(workoutTimestamp))
+    private val workout = Workout(workoutName, workoutDescricao, workoutTimestamp)
 
     // Workout Path
     private val singlePath = "users/$userUid/workouts/${workout.timestamp}-${workout.nome}"

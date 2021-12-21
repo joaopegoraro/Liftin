@@ -28,7 +28,7 @@ class ExerciseRepositoryTest {
     private val user = User(userUid)
 
     // Mock workout
-    private val workout = Workout(nome, workoutDescricao, Timestamp(workoutTimestamp))
+    private val workout = Workout(nome, workoutDescricao, workoutTimestamp)
 
     // Mock exercise
     private val exercise = Exercise(nome, exerciseImg, exerciseDescricao)

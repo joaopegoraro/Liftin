@@ -26,7 +26,7 @@ class CreateExerciseUseCaseTest {
 
     // Mock models
     private val exercise = Exercise(nome, imageUrl, observacoes)
-    private val workout = Workout(nome, descricao, Timestamp(timestamp))
+    private val workout = Workout(nome, descricao, timestamp)
     private val user = User(uid)
 
     // Constants

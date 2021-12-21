@@ -31,11 +31,11 @@ class ModelTest {
     private val user = User(uid)
     private val userHashMap = hashMapOf(uid to uid)
 
-    private val workout = Workout(nome, descricao, Timestamp(timestamp))
+    private val workout = Workout(nome, descricao, timestamp)
     private val workoutHashMap = hashMapOf(
         nomeKey to nome,
         descricaoKey to descricao,
-        timestampKey to Timestamp(timestamp)
+        timestampKey to timestamp
     )
 
     private val exercise = Exercise(nome, imagemUrl, observacoes)

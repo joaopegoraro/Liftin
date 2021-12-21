@@ -24,7 +24,7 @@ class CreateWorkoutUseCaseTest {
     private val mockWorkoutRepository = mockk<WorkoutRepository>()
 
     // Mock models
-    private val workout = Workout(nome, descricao, Timestamp(timestamp))
+    private val workout = Workout(nome, descricao, timestamp)
     private val user = User(uid)
 
     // Constants
