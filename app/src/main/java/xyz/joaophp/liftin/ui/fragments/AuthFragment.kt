@@ -63,7 +63,7 @@ class AuthFragment : Fragment() {
                 val password = tfPassword.text?.toString()
 
                 // Check if credentials are not empty or null
-                if (email == null || password == null) {
+                if (email.isNullOrEmpty() || password.isNullOrEmpty()) {
                     handleFailure(AuthFailure.EmptyCredentials)
                     return@launchWhenCreated
                 }
