@@ -68,7 +68,7 @@ class AddExerciseFragment : Fragment() {
         getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { contentUri ->
             contentUri?.let {
                 imageUri = contentUri
-                Picasso.get().load(contentUri).into(binding?.ivImage)
+                Picasso.get().load(imageUri).into(binding?.ivImage)
             }
         }
     }
@@ -109,51 +109,50 @@ class AddExerciseFragment : Fragment() {
     }
 
     private fun createExercise() {
+        binding?.apply {
 
-        // Show loading animation
-        binding?.loading?.show()
-        binding?.root?.alpha = 0.5f // lowers opacity during loading
+            // Get input fields values
+            val nome = tfNome.text.toString()
+            val observacoes = tfObservacao.text.toString()
 
-        // Get input fields values
-        val nome = binding?.tfNome?.text?.toString()
-        val observacoes = binding?.tfObservacao?.text?.toString()
-
-        // Check if they are null or empty
-        if (nome.isNullOrEmpty() || observacoes.isNullOrEmpty()) {
-
-            // Hide loading animation
-            binding?.root?.alpha = 1f // opacity goes back to normal
-            binding?.loading?.hide()
-
-            return handleFailure(ExerciseFailure.EmptyFields)
-        }
-
-        // Create exercise
-        lifecycleScope.launchWhenStarted {
-            imageUri?.let { uri ->
-                viewModel.createImage(user, uri).foldAsync(
-                    ifError = { failure -> handleFailure(failure) },
-                    ifSuccess = { path ->
-                        viewModel.createExercise(
-                            user,
-                            workout,
-                            nome.toInt(),
-                            observacoes,
-                            path
-                        ).fold(
-                            ifError = { failure -> handleFailure(failure) },
-                            ifSuccess = { navigateToHomeFragment() }
-                        )
-                    }
-                )
-                return@launchWhenStarted
+            // Check if they are empty
+            if (nome.isEmpty() || observacoes.isEmpty()) {
+                return handleFailure(ExerciseFailure.EmptyFields)
             }
-            handleFailure(ImageFailure.EmptyField)
-        }
 
-        // Hide loading animation
-        binding?.root?.alpha = 1f // opacity goes back to normal
-        binding?.loading?.hide()
+            // Create exercise
+            lifecycleScope.launchWhenResumed {
+
+                // Show loading animation
+                loading.show()
+                clRoot.alpha = 0.5f // lowers opacity during loading
+
+                imageUri?.let { uri ->
+                    viewModel.createImage(user, uri).foldAsync(
+                        ifError = { failure -> handleFailure(failure) },
+                        ifSuccess = { path ->
+                            viewModel.createExercise(
+                                user,
+                                workout,
+                                nome.toInt(),
+                                observacoes,
+                                path
+                            ).fold(
+                                ifError = { failure -> handleFailure(failure) },
+                                ifSuccess = { navigateToHomeFragment() }
+                            )
+                        }
+                    )
+                    return@launchWhenResumed
+                }
+
+                // Hide loading animation
+                clRoot.alpha = 1f // opacity goes back to normal
+                loading.hide()
+
+                handleFailure(ImageFailure.EmptyField)
+            }
+        }
     }
 
     // Handle AppState

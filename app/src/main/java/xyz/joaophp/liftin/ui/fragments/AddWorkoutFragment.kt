@@ -64,36 +64,34 @@ class AddWorkoutFragment : Fragment() {
     // Action methods
 
     private fun createWorkout() {
+        binding?.apply {
 
-        // Show loading animation
-        binding?.loading?.show()
-        binding?.root?.alpha = 0.5f // lowers opacity during loading
+            // Get input fields values
+            val nome = tfNome.text.toString()
+            val descricao = tfDescricao.text.toString()
 
-        // Get input fields values
-        val nome = binding?.tfNome?.text?.toString()
-        val descricao = binding?.tfDescricao?.text?.toString()
+            // Check if they are empty
+            if (nome.isEmpty() || descricao.isEmpty()) {
+                return handleFailure(WorkoutFailure.EmptyFields)
+            }
 
-        // Check if they are null or empty
-        if (nome.isNullOrEmpty() || descricao.isNullOrEmpty()) {
+            // Create workout
+            lifecycleScope.launchWhenStarted {
 
-            // Hide loading animation
-            binding?.root?.alpha = 1f // opacity goes back to normal
-            binding?.loading?.hide()
+                // Show loading animation
+                binding?.loading?.show()
+                binding?.clRoot?.alpha = 0.5f // lowers opacity during loading
 
-            return handleFailure(WorkoutFailure.EmptyFields)
+                viewModel.createWorkout(nome.toInt(), descricao, user).fold(
+                    ifError = { failure -> handleFailure(failure) },
+                    ifSuccess = { navigateToHomeFragment() }
+                )
+
+                // Hide loading animation
+                binding?.clRoot?.alpha = 1f // opacity goes back to normal
+                binding?.loading?.hide()
+            }
         }
-
-        // Create workout
-        lifecycleScope.launchWhenStarted {
-            viewModel.createWorkout(nome.toInt(), descricao, user).fold(
-                ifError = { failure -> handleFailure(failure) },
-                ifSuccess = { navigateToHomeFragment() }
-            )
-        }
-
-        // Hide loading animation
-        binding?.root?.alpha = 1f // opacity goes back to normal
-        binding?.loading?.hide()
     }
 
     // Handle AppState

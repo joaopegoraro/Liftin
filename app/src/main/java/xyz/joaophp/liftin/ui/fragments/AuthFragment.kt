@@ -70,7 +70,7 @@ class AuthFragment : Fragment() {
 
                 // Show loading animation
                 loading.show()
-                root.alpha = 0.5f // lowers opacity during loading
+                clRoot.alpha = 0.5f // lowers opacity during loading
 
                 // Authenticate
                 authMethod(email, password).fold(
@@ -79,7 +79,7 @@ class AuthFragment : Fragment() {
                 )
 
                 // Hide loading animation
-                root.alpha = 1f // opacity goes back to normal
+                clRoot.alpha = 1f // opacity goes back to normal
                 loading.hide()
             }
         }

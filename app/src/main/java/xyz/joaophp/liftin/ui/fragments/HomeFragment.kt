@@ -11,6 +11,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.runBlocking
 import xyz.joaophp.liftin.R
 import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.data.models.Workout
@@ -101,7 +102,10 @@ class HomeFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.logout_icon -> signOut()
+            R.id.logout_icon -> {
+                signOut()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -119,22 +123,23 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun signOut(): Boolean {
+    private fun signOut() {
+        runBlocking {
 
-        // Show loading animation
-        binding?.loading?.show()
-        binding?.root?.alpha = 0.5f // lowers opacity during loading
+            // Show loading animation
+            binding?.loading?.show()
+            binding?.clRoot?.alpha = 0.5f // lowers opacity during loading
 
-        viewModel.signOut().fold(
-            ifError = { failure -> handleFailure(failure) },
-            ifSuccess = { navigateToAuthFragment() }
-        )
+            viewModel.signOut().fold(
+                ifError = { failure -> handleFailure(failure) },
+                ifSuccess = { navigateToAuthFragment() }
+            )
 
-        // Hide loading animation
-        binding?.root?.alpha = 1f // opacity goes back to normal
-        binding?.loading?.hide()
+            // Hide loading animation
+            binding?.clRoot?.alpha = 1f // opacity goes back to normal
+            binding?.loading?.hide()
 
-        return true
+        }
     }
 
     // Handle flows

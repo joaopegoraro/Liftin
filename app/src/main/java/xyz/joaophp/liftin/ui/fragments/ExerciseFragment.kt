@@ -59,7 +59,7 @@ class ExerciseFragment : Fragment() {
         binding?.apply {
             tvNomeValue.text = exercise.nome.toString()
             tvObservacaoValue.text = exercise.observacoes
-            setImage()
+            getImage()
         }
 
         // Enable delete button in the action bar
@@ -92,8 +92,13 @@ class ExerciseFragment : Fragment() {
 
     // Action methods
 
-    private fun setImage() {
+    private fun getImage() {
         lifecycleScope.launchWhenStarted {
+
+            // Show loading animation
+            binding?.loading?.show()
+            binding?.clRoot?.alpha = 0.5f // lowers opacity during loading
+
             viewModel.getImage(exercise).fold(
                 ifError = { failure -> handleFailure(failure) },
                 ifSuccess = { byteArray ->
@@ -101,6 +106,10 @@ class ExerciseFragment : Fragment() {
                     binding?.ivImage?.setImageBitmap(bitmap)
                 }
             )
+
+            // Hide loading animation
+            binding?.clRoot?.alpha = 1f // opacity goes back to normal
+            binding?.loading?.hide()
         }
     }
 
