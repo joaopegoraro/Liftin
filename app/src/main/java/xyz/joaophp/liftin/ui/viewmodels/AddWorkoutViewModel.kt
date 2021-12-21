@@ -7,11 +7,10 @@ import xyz.joaophp.liftin.data.models.Workout
 import xyz.joaophp.liftin.usecases.workouts.CreateWorkoutUseCase
 import xyz.joaophp.liftin.utils.Either
 import xyz.joaophp.liftin.utils.Error
+import xyz.joaophp.liftin.utils.Helpers
 import xyz.joaophp.liftin.utils.Success
 import xyz.joaophp.liftin.utils.failures.Failure
 import xyz.joaophp.liftin.utils.failures.WorkoutFailure
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,9 +25,7 @@ class AddWorkoutViewModel @Inject constructor(
         user: User
     ): Either<Failure, Unit> {
         return try {
-            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            val date = LocalDate.parse(dateString, formatter)
-            val timestamp = date.toEpochDay()
+            val timestamp = Helpers.stringToEpoch(dateString)
             val workout = Workout(nome, descricao, timestamp)
 
             createWorkoutUseCase(workout, user).fold(

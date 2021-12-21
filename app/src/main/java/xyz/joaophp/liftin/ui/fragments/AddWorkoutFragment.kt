@@ -54,7 +54,8 @@ class AddWorkoutFragment : Fragment() {
         binding?.tfDateValue?.setOnClickListener { datePicker?.show() }
         binding?.fab?.setOnClickListener { createWorkout() }
         datePicker?.setOnDateSetListener { _, year, month, dayOfMonth ->
-            binding?.tfDateValue?.text = "$dayOfMonth/${month + 1}/$year"
+            val day = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth
+            binding?.tfDateValue?.text = "$day/${month + 1}/$year"
         }
 
         return binding?.root
