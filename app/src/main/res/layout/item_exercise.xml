@@ -30,7 +30,7 @@
         android:id="@+id/iv_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="Delete icon"
+        android:contentDescription="@string/delete_icon"
         android:src="@drawable/ic_delete"
         app:layout_constraintBottom_toBottomOf="@id/tv_exercise_name"
         app:layout_constraintEnd_toEndOf="parent"

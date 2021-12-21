@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Name:"
+        android:text="@string/name"
         app:layout_constraintBottom_toTopOf="@id/tv_descricao"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,7 +30,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:autoSizeTextType="uniform"
-        android:hint="1"
+        android:hint="@string/name_hint"
+        android:inputType="number"
         android:paddingHorizontal="16dp"
         app:layout_constraintBottom_toBottomOf="@id/tv_nome"
         app:layout_constraintRight_toRightOf="parent"
@@ -41,7 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Description:"
+        android:text="@string/description"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_nome" />
 
@@ -51,7 +52,7 @@
         android:layout_height="0dp"
         android:layout_margin="16dp"
         android:autoSizeTextType="uniform"
-        android:hint="(Optional)"
+        android:hint="@string/description_hint"
         app:layout_constraintBottom_toTopOf="@id/fab"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -63,7 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:contentDescription="Save Workout"
+        android:contentDescription="@string/save_workout"
         android:src="@drawable/ic_save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
