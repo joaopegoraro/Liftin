@@ -61,9 +61,7 @@ class AddExerciseFragment : Fragment() {
 
         // Get Image file INTENT
         getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { contentUri ->
-            if (contentUri == null) {
-                handleFailure(ImageFailure.EmptyUri)
-            } else {
+            contentUri?.let {
                 imageUri = contentUri
                 Picasso.get().load(contentUri).into(binding?.ivImage)
             }
@@ -186,7 +184,6 @@ class AddExerciseFragment : Fragment() {
             is ExerciseFailure.EmptyFields -> getString(R.string.exercise_empty_fields)
             is ImageFailure.EmptyField -> getString(R.string.image_empty_field)
             is ImageFailure.PermissionNeeded -> getString(R.string.permission_needed)
-            is ImageFailure.EmptyUri -> getString(R.string.gallery_upload_fail)
             is StorageFailure.Unauthorised -> getString(R.string.unauthorised)
             is StorageFailure.Timeout -> getString(R.string.timeout)
             is StorageFailure.LimitExceeded -> getString(R.string.upload_limit_exceeded)

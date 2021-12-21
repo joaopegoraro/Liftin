@@ -25,7 +25,6 @@
     <string name="user_retrieval_fail">"There was a problem retrieving authentication information.\nContact the developer"</string>
     <!-- AddExerciseFragment -->
     <string name="permission_needed">You need to give permission for access to the gallery</string>
-    <string name="gallery_upload_fail">There was a problem retrieving the image from the gallery</string>
     <string name="exercise_empty_fields">The name and observations fields can\'t be empty</string>
     <string name="image_empty_field">You have to choose an image</string>
     <string name="upload_limit_exceeded">You have exceeded your image upload quota</string>
