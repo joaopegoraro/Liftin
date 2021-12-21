@@ -40,17 +40,22 @@ class WorkoutFragment : Fragment() {
 
     // Lifecycle methods
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Handle state
+        lifecycleScope.launchWhenCreated {
+            appViewModel.appState.collect { state -> handleState(state) }
+        }
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentWorkoutBinding.inflate(inflater, container, false)
-
-        // Handle state
-        lifecycleScope.launchWhenStarted {
-            appViewModel.appState.collect { state -> handleState(state) }
-        }
 
         // Set up workout list adapter
         val exerciseAdapter = ExerciseAdapter()

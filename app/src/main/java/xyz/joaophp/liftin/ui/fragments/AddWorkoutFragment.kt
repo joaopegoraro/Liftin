@@ -34,17 +34,21 @@ class AddWorkoutFragment : Fragment() {
 
     // Lifecycle methods
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Handle state
+        lifecycleScope.launchWhenCreated {
+            appViewModel.appState.collect { state -> handleState(state) }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddWorkoutBinding.inflate(inflater, container, false)
-
-        // Handle state
-        lifecycleScope.launchWhenStarted {
-            appViewModel.appState.collect { state -> handleState(state) }
-        }
 
         // Fab click listener
         binding?.fab?.setOnClickListener { createWorkout() }
@@ -80,7 +84,7 @@ class AddWorkoutFragment : Fragment() {
         }
 
         // Create workout
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launchWhenStarted {
             viewModel.createWorkout(nome.toInt(), descricao, user).fold(
                 ifError = { failure -> handleFailure(failure) },
                 ifSuccess = { navigateToHomeFragment() }

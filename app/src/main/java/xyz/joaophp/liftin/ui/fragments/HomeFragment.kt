@@ -49,7 +49,7 @@ class HomeFragment : Fragment() {
         )
 
         // Handle state
-        lifecycleScope.launchWhenStarted {
+        lifecycleScope.launchWhenCreated {
             appViewModel.appState.collect { state -> handleState(state) }
         }
     }

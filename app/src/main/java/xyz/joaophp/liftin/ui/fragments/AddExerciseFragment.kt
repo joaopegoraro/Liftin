@@ -49,6 +49,11 @@ class AddExerciseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Handle state
+        lifecycleScope.launchWhenCreated {
+            appViewModel.appState.collect { state -> handleState(state) }
+        }
+
         // Request permission INTENT
         requestPermission =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -74,11 +79,6 @@ class AddExerciseFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddExerciseBinding.inflate(inflater, container, false)
-
-        // Handle state
-        lifecycleScope.launchWhenStarted {
-            appViewModel.appState.collect { state -> handleState(state) }
-        }
 
         // Add Image button listener
         binding?.btnAddImage?.setOnClickListener { getImageFromGallery() }
@@ -129,7 +129,7 @@ class AddExerciseFragment : Fragment() {
         }
 
         // Create exercise
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launchWhenStarted {
             imageUri?.let { uri ->
                 viewModel.createImage(user, uri).foldAsync(
                     ifError = { failure -> handleFailure(failure) },
@@ -146,7 +146,7 @@ class AddExerciseFragment : Fragment() {
                         )
                     }
                 )
-                return@launchWhenCreated
+                return@launchWhenStarted
             }
             handleFailure(ImageFailure.EmptyField)
         }
