@@ -20,7 +20,7 @@ class WorkoutRepositoryImpl @Inject constructor(
 
     private val workoutsPath = fun(user: User) = "users/${user.uid}/workouts"
     private val workoutPath = fun(user: User, workout: Workout) =
-        "${workoutsPath(user)}/${workout.timestamp}-${workout.nome}"
+        "${workoutsPath(user)}/${workout.nome}"
 
     @ExperimentalCoroutinesApi
     override suspend fun getWorkouts(user: User): Flow<Either<Failure, List<Workout?>?>> {

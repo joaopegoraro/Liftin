@@ -49,15 +49,8 @@ class AddWorkoutFragment : Fragment() {
             appViewModel.appState.collect { state -> handleState(state) }
         }
 
-
-        // Click listeners
-
-        binding?.tfDateValue?.setOnClickListener { datePicker?.show() }
+        // Fab click listener
         binding?.fab?.setOnClickListener { createWorkout() }
-        datePicker?.setOnDateSetListener { _, year, month, dayOfMonth ->
-            val day = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth
-            binding?.tfDateValue?.text = "$day/${month + 1}/$year"
-        }
 
         return binding?.root
     }
@@ -78,10 +71,9 @@ class AddWorkoutFragment : Fragment() {
         // Get input fields values
         val nome = binding?.tfNome?.text?.toString()
         val descricao = binding?.tfDescricao?.text?.toString()
-        val data = binding?.tfDateValue?.text?.toString()
 
         // Check if they are null or empty
-        if (nome.isNullOrEmpty() || descricao.isNullOrEmpty() || data.isNullOrEmpty()) {
+        if (nome.isNullOrEmpty() || descricao.isNullOrEmpty()) {
 
             // Hide loading animation
             binding?.root?.alpha = 1f // opacity goes back to normal
@@ -92,7 +84,7 @@ class AddWorkoutFragment : Fragment() {
 
         // Create workout
         lifecycleScope.launchWhenCreated {
-            viewModel.createWorkout(nome.toInt(), descricao, data, user).fold(
+            viewModel.createWorkout(nome.toInt(), descricao, user).fold(
                 ifError = { failure -> handleFailure(failure) },
                 ifSuccess = { navigateUp() }
             )
@@ -139,8 +131,10 @@ class AddWorkoutFragment : Fragment() {
                 displayError("There was a problem with your connection.\nTry again.")
             is DatabaseFailure.Unauthorised ->
                 displayError("There appears to be a problem with your authentication.\n Try to login in again")
-            else ->
+            else -> {
+                failure.e?.printStackTrace()
                 displayError("An unknown error has happened:\n${failure.e}")
+            }
         }
     }
 

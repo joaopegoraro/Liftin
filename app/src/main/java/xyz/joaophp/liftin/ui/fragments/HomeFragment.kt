@@ -15,6 +15,7 @@ import xyz.joaophp.liftin.R
 import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.data.models.Workout
 import xyz.joaophp.liftin.databinding.FragmentHomeBinding
+import xyz.joaophp.liftin.ui.adapters.WorkoutAdapter
 import xyz.joaophp.liftin.ui.state.AppState
 import xyz.joaophp.liftin.ui.viewmodels.AppViewModel
 import xyz.joaophp.liftin.ui.viewmodels.HomeViewModel
@@ -58,13 +59,29 @@ class HomeFragment : Fragment() {
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        // Set up workout list adapter
+        val workoutAdapter = WorkoutAdapter()
+        workoutAdapter.addOnClickListener { workout ->
+            navigateToWorkoutFragment(workout)
+        }
+        workoutAdapter.addOnDeleteClickListener { workout ->
+            deleteWorkout(workout)
+        }
+
+        // Set up workout list
+        binding?.rvWorkoutList?.adapter = workoutAdapter
+
+        // Fab click listener
         binding?.apply {
             fab.setOnClickListener { navigateToAddWorkoutFragment() }
         }
 
+        // Flow collectors
         setUpCollectors()
 
+        // Enable SignOut button in the action bar
         setHasOptionsMenu(true)
+
         return binding?.root
     }
 
@@ -89,6 +106,17 @@ class HomeFragment : Fragment() {
 
     // Action methods
 
+    private fun deleteWorkout(workout: Workout) {
+        lifecycleScope.launchWhenStarted {
+            viewModel.deleteWorkout(user, workout).fold(
+                ifError = { failure -> handleFailure(failure) },
+                ifSuccess = { deletedWorkout ->
+                    displayMessage("The workout ${deletedWorkout.nome} has been deleted")
+                }
+            )
+        }
+    }
+
     private fun signOut(): Boolean {
 
         // Show loading animation
@@ -112,7 +140,15 @@ class HomeFragment : Fragment() {
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun setUpCollectors() {
         lifecycleScope.launchWhenStarted {
-            viewModel.getWorkouts(user)
+            viewModel.getWorkouts(user).collect { either ->
+                either.fold(
+                    ifError = { failure -> handleFailure(failure) },
+                    ifSuccess = { workoutList ->
+                        val adapter = binding?.rvWorkoutList?.adapter as WorkoutAdapter?
+                        adapter?.submitList(workoutList)
+                    }
+                )
+            }
         }
     }
 
@@ -148,14 +184,14 @@ class HomeFragment : Fragment() {
         when (failure) {
             is AuthFailure.NoCurrentUser -> Unit
             is AuthFailure.CantRetrieveUser -> {
-                displayError("There was a problem retrieving authentication information")
+                displayMessage("There was a problem retrieving authentication information")
                 navigateToAuthFragment()
             }
-            else -> displayError("An unexpected error has occurred\n" + failure.e)
+            else -> displayMessage("An unexpected error has occurred\n" + failure.e)
         }
     }
 
-    private fun displayError(message: String) {
+    private fun displayMessage(message: String) {
         view?.let {
             Snackbar.make(it, message, Snackbar.LENGTH_LONG).show()
         }

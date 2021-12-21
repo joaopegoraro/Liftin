@@ -29,10 +29,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:autoSizeTextType="uniform"
         android:hint="1"
-        app:layout_constraintBottom_toTopOf="@id/tf_descricao"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_nome"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/tv_nome" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_descricao"
@@ -40,39 +42,21 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="Description:"
-        app:layout_constraintBottom_toTopOf="@id/tv_date"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_nome" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/tf_descricao"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_margin="16dp"
+        android:autoSizeTextType="uniform"
         android:hint="(Optional)"
-        app:layout_constraintBottom_toTopOf="@id/tf_date_value"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tf_nome" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tv_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Date:"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/fab"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_descricao" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/tf_date_value"
-        android:hint="10/12/2021"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tf_descricao" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

@@ -21,11 +21,10 @@ class AddWorkoutViewModel @Inject constructor(
     suspend fun createWorkout(
         nome: Number,
         descricao: String,
-        dateString: String,
         user: User
     ): Either<Failure, Unit> {
         return try {
-            val timestamp = Helpers.stringToEpoch(dateString)
+            val timestamp = Helpers.currentTimestamp()
             val workout = Workout(nome, descricao, timestamp)
 
             createWorkoutUseCase(workout, user).fold(

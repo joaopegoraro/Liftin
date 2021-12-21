@@ -30,7 +30,7 @@ class WorkoutRepositoryTest {
     private val workout = Workout(workoutName, workoutDescricao, workoutTimestamp)
 
     // Workout Path
-    private val singlePath = "users/$userUid/workouts/${workout.timestamp}-${workout.nome}"
+    private val singlePath = "users/$userUid/workouts/${workout.nome}"
 
     // Constants
     companion object {
