@@ -10,5 +10,5 @@ sealed class AppState(user: User? = null) {
     class InAddWorkout(val user: User) : AppState(user)
     class InWorkout(val user: User, val workout: Workout) : AppState(user)
     class InAddExercise(val user: User, val workout: Workout) : AppState(user)
-    class InExercise(val user: User, val exercise: Exercise) : AppState(user)
+    class InExercise(val user: User, val workout: Workout, val exercise: Exercise) : AppState(user)
 }

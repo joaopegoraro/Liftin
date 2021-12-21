@@ -85,7 +85,17 @@ class WorkoutFragment : Fragment() {
                 ifError = { failure -> handleFailure(failure) },
                 ifSuccess = { deletedExercise ->
                     displayMessage("The exercise ${deletedExercise.nome} has been deleted")
+                    deleteImage(exercise)
                 }
+            )
+        }
+    }
+
+    private fun deleteImage(exercise: Exercise) {
+        lifecycleScope.launchWhenStarted {
+            viewModel.deleteImage(exercise).fold(
+                ifError = { failure -> handleFailure(failure) },
+                ifSuccess = { /* Everything went smoothly! */ }
             )
         }
     }
@@ -121,13 +131,8 @@ class WorkoutFragment : Fragment() {
 
     // Navigation methods
 
-    private fun navigateToHomeFragment() {
-        appViewModel.updateState(AppState.InHome(user))
-        findNavController().navigateUp()
-    }
-
     private fun navigateToExerciseFragment(exercise: Exercise) {
-        appViewModel.updateState(AppState.InExercise(user, exercise))
+        appViewModel.updateState(AppState.InExercise(user, workout, exercise))
         findNavController().navigate(R.id.action_workoutFragment_to_exerciseFragment)
 
     }
@@ -150,6 +155,4 @@ class WorkoutFragment : Fragment() {
             Snackbar.make(it, message, Snackbar.LENGTH_LONG).show()
         }
     }
-
-
 }
