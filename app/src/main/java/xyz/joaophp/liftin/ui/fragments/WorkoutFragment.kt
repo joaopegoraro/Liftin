@@ -72,6 +72,11 @@ class WorkoutFragment : Fragment() {
         return binding?.root
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
+    }
+
     // Action methods
 
     private fun deleteExercise(exercise: Exercise) {

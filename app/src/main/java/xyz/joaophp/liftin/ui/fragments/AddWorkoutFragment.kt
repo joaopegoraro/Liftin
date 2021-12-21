@@ -139,6 +139,4 @@ class AddWorkoutFragment : Fragment() {
             Snackbar.make(it, message, Snackbar.LENGTH_LONG).show()
         }
     }
-
-
 }
