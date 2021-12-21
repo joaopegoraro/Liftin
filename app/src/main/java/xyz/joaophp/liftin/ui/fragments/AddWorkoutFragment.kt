@@ -1,6 +1,5 @@
 package xyz.joaophp.liftin.ui.fragments
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +25,6 @@ import xyz.joaophp.liftin.utils.failures.WorkoutFailure
 class AddWorkoutFragment : Fragment() {
 
     private var binding: FragmentAddWorkoutBinding? = null
-    private var datePicker: DatePickerDialog? = null
 
     private val appViewModel: AppViewModel by activityViewModels()
     private val viewModel: AddWorkoutViewModel by viewModels()
@@ -41,8 +39,6 @@ class AddWorkoutFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddWorkoutBinding.inflate(inflater, container, false)
-        datePicker = DatePickerDialog(requireContext())
-
 
         // Handle state
         lifecycleScope.launchWhenStarted {
@@ -86,7 +82,7 @@ class AddWorkoutFragment : Fragment() {
         lifecycleScope.launchWhenCreated {
             viewModel.createWorkout(nome.toInt(), descricao, user).fold(
                 ifError = { failure -> handleFailure(failure) },
-                ifSuccess = { navigateUp() }
+                ifSuccess = { navigateToHomeFragment() }
             )
         }
 
@@ -106,7 +102,7 @@ class AddWorkoutFragment : Fragment() {
 
     // Navigation methods
 
-    private fun navigateUp() {
+    private fun navigateToHomeFragment() {
         appViewModel.updateState(AppState.InHome(user))
         findNavController().navigateUp()
     }

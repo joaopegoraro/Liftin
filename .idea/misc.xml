@@ -6,6 +6,8 @@
         <entry key="app/src/main/res/layout/fragment_add_workout.xml" value="0.22780797101449277" />
         <entry key="app/src/main/res/layout/fragment_auth.xml" value="0.23505434782608695" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_workout.xml" value="0.22780797101449277" />
+        <entry key="app/src/main/res/layout/item_exercise.xml" value="0.22780797101449277" />
         <entry key="app/src/main/res/layout/item_workout.xml" value="0.67" />
         <entry key="app/src/main/res/menu/menu_home.xml" value="0.365625" />
       </map>
