@@ -18,6 +18,7 @@ import xyz.joaophp.liftin.databinding.FragmentAddWorkoutBinding
 import xyz.joaophp.liftin.ui.state.AppState
 import xyz.joaophp.liftin.ui.viewmodels.AddWorkoutViewModel
 import xyz.joaophp.liftin.ui.viewmodels.AppViewModel
+import xyz.joaophp.liftin.utils.failures.DatabaseFailure
 import xyz.joaophp.liftin.utils.failures.Failure
 import xyz.joaophp.liftin.utils.failures.WorkoutFailure
 
@@ -122,8 +123,24 @@ class AddWorkoutFragment : Fragment() {
 
     private fun handleFailure(failure: Failure) {
         when (failure) {
+            is WorkoutFailure.WrongModel ->
+                displayError("There was a big problem creating your workout.\nContact the developer.")
+            is WorkoutFailure.CreationFailure ->
+                displayError("There was a problem creating your workout\n${failure.e}")
+            is DatabaseFailure.Timeout ->
+                displayError("Can't reach our servers.\nCheck your connection or contact the developer.")
+            is DatabaseFailure.DocumentAlreadyExists ->
+                displayError("A workout with this name and date already exists")
+            is DatabaseFailure.InvalidQuery ->
+                displayError("There was a huge problem creating your workout.\nContact the developer.")
+            is DatabaseFailure.Unavailable ->
+                displayError("Our servers are currently unavailable.\n Try again later.")
+            is DatabaseFailure.DataLost ->
+                displayError("There was a problem with your connection.\nTry again.")
+            is DatabaseFailure.Unauthorised ->
+                displayError("There appears to be a problem with your authentication.\n Try to login in again")
             else ->
-                displayError("An unknown error has happened\n${failure.e}")
+                displayError("An unknown error has happened:\n${failure.e}")
         }
     }
 
