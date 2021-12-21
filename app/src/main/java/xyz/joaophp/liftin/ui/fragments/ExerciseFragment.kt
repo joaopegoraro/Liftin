@@ -19,7 +19,10 @@ import xyz.joaophp.liftin.databinding.FragmentExerciseBinding
 import xyz.joaophp.liftin.ui.state.AppState
 import xyz.joaophp.liftin.ui.viewmodels.AppViewModel
 import xyz.joaophp.liftin.ui.viewmodels.ExerciseViewModel
+import xyz.joaophp.liftin.utils.failures.DatabaseFailure
+import xyz.joaophp.liftin.utils.failures.ExerciseFailure
 import xyz.joaophp.liftin.utils.failures.Failure
+import xyz.joaophp.liftin.utils.failures.StorageFailure
 
 
 @AndroidEntryPoint
@@ -147,9 +150,22 @@ class ExerciseFragment : Fragment() {
     // Handle errors
 
     private fun handleFailure(failure: Failure) {
-        when (failure) {
-            else -> displayMessage("An unexpected error has occurred\n" + failure.e)
+        failure.e?.printStackTrace()
+        val message = when (failure) {
+            is ExerciseFailure.WrongModel -> getString(R.string.wrong_model)
+            is StorageFailure.Unauthorised -> getString(R.string.unauthorised)
+            is StorageFailure.NotFound -> getString(R.string.image_not_found)
+            is StorageFailure.Timeout -> getString(R.string.timeout)
+            is StorageFailure.LimitExceeded -> getString(R.string.download_limit_exceeded)
+            is DatabaseFailure.NotFound -> getString(R.string.exercise_not_found)
+            is DatabaseFailure.Timeout -> getString(R.string.timeout)
+            is DatabaseFailure.InvalidQuery -> getString(R.string.invalid_query)
+            is DatabaseFailure.Unavailable -> getString(R.string.unavailable)
+            is DatabaseFailure.DataLost -> getString(R.string.data_lost)
+            is DatabaseFailure.Unauthorised -> getString(R.string.unauthorised)
+            else -> getString(R.string.unknown_error)
         }
+        displayMessage(message)
     }
 
     private fun displayMessage(message: String) {

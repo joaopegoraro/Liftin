@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import xyz.joaophp.liftin.R
 import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.databinding.FragmentAddWorkoutBinding
 import xyz.joaophp.liftin.ui.state.AppState
@@ -110,28 +111,20 @@ class AddWorkoutFragment : Fragment() {
     // Handle errors
 
     private fun handleFailure(failure: Failure) {
-        when (failure) {
-            is WorkoutFailure.WrongModel ->
-                displayError("There was a big problem creating your workout.\nContact the developer.")
-            is WorkoutFailure.CreationFailure ->
-                displayError("There was a problem creating your workout\n${failure.e}")
-            is DatabaseFailure.Timeout ->
-                displayError("Can't reach our servers.\nCheck your connection or contact the developer.")
-            is DatabaseFailure.DocumentAlreadyExists ->
-                displayError("A workout with this name and date already exists")
-            is DatabaseFailure.InvalidQuery ->
-                displayError("There was a huge problem creating your workout.\nContact the developer.")
-            is DatabaseFailure.Unavailable ->
-                displayError("Our servers are currently unavailable.\n Try again later.")
-            is DatabaseFailure.DataLost ->
-                displayError("There was a problem with your connection.\nTry again.")
-            is DatabaseFailure.Unauthorised ->
-                displayError("There appears to be a problem with your authentication.\n Try to login in again")
-            else -> {
-                failure.e?.printStackTrace()
-                displayError("An unknown error has happened:\n${failure.e}")
-            }
+        failure.e?.printStackTrace()
+        val message = when (failure) {
+            is WorkoutFailure.EmptyFields -> getString(R.string.workout_empty_fields)
+            is WorkoutFailure.WrongModel -> getString(R.string.wrong_model)
+            is WorkoutFailure.CreationFailure -> getString(R.string.workout_creation_failure)
+            is DatabaseFailure.Timeout -> getString(R.string.timeout)
+            is DatabaseFailure.DocumentAlreadyExists -> getString(R.string.workout_already_exists)
+            is DatabaseFailure.InvalidQuery -> getString(R.string.invalid_query)
+            is DatabaseFailure.Unavailable -> getString(R.string.unavailable)
+            is DatabaseFailure.DataLost -> getString(R.string.data_lost)
+            is DatabaseFailure.Unauthorised -> getString(R.string.unauthorised)
+            else -> getString(R.string.unknown_error)
         }
+        displayError(message)
     }
 
     private fun displayError(message: String) {

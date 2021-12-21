@@ -21,6 +21,8 @@ class UserRepositoryImpl @Inject constructor(
         return authService.getCurrentUser().fold(
             ifError = {
                 if (it is AuthFailure.NoCurrentUser) {
+                    // NoCurrentUser failure means everything is OK, but the user is
+                    // not logged in, so isUserLoggedIn() returns false
                     Success(false)
                 } else {
                     Error(it)

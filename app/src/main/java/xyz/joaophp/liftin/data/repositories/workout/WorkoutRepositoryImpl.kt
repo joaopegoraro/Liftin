@@ -31,7 +31,7 @@ class WorkoutRepositoryImpl @Inject constructor(
                     ifError = { Error(it) },
                     ifSuccess = { list ->
                         val workouts = list?.map { hashMap ->
-                            hashMap?.let { Workout.fromMap(it) as Workout }
+                            hashMap?.let { Workout.fromMap(it) }
                         }
                         Success(workouts)
                     }

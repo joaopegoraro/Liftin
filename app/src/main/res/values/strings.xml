@@ -7,4 +7,40 @@
     <string name="workout_title">Workout</string>
     <string name="add_exercise_title">Add Exercise</string>
     <string name="exercise_title">Exercise</string>
+    <!-- Common -->
+    <string name="unknown_error">"An unknown error has happened.\nContact the developer".</string>
+    <string name="timeout">There was a problem connecting to our servers</string>
+    <string name="unavailable">"Our servers are currently unavailable.\nTry again later."</string>
+    <string name="data_lost">"There was a problem with your connection.\nTry again."</string>
+    <string name="unauthorised">"You are not authorised to do this.\nContact the developer"</string>
+    <string name="wrong_model">"Something went really bad.\nContact the developer"</string>
+    <string name="invalid_query">Something went wrong.\nContact the developer.</string>
+    <!-- AuthFragment -->
+    <string name="empty_credentials">The email and password fields can\'t be empty</string>
+    <string name="bad_email">The email is invalid</string>
+    <string name="invalid_credentials">Invalid Credentials</string>
+    <string name="weak_password">The password must be at least 6 characters long</string>
+    <string name="invalid_email">This email is not registered to any account</string>
+    <string name="email_taken">The email is already in use</string>
+    <string name="user_retrieval_fail">"There was a problem retrieving authentication information.\nContact the developer"</string>
+    <!-- AddExerciseFragment -->
+    <string name="permission_needed">You need to give permission for access to the gallery</string>
+    <string name="gallery_upload_fail">There was a problem retrieving the image from the gallery</string>
+    <string name="exercise_empty_fields">The name and observations fields can\'t be empty</string>
+    <string name="image_empty_field">You have to choose an image</string>
+    <string name="upload_limit_exceeded">You have exceeded your image upload quota</string>
+    <string name="exercise_already_exists">"An exercise with this name already exists"</string>
+    <!-- AddWorkoutFragment -->
+    <string name="workout_creation_failure">"There was a problem creating your workout"</string>
+    <string name="workout_already_exists">A workout with this name and date already exists</string>
+    <string name="workout_empty_fields">The name and description fields can\'t be empty</string>
+    <!-- ExerciseFragment -->
+    <string name="download_limit_exceeded">You have exceeded your image download quota</string>
+    <string name="exercise_not_found">There was a problem trying to find this exercise</string>
+    <string name="image_not_found">There was a problem retrieving the exercise image</string>
+    <!-- HomeFragment -->
+    <string name="workouts_not_found">There was a problem retrieving the workout list</string>
+    <!-- WorkoutFragment -->
+    <string name="exercises_not_found">There was a problem retrieving the exercise list</string>
+    <string name="image_deletion_fail">There was a problem finding the exercise image to delete</string>
 </resources>

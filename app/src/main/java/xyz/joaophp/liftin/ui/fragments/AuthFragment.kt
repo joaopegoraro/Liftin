@@ -95,24 +95,18 @@ class AuthFragment : Fragment() {
     // Error handling
 
     private fun handleFailure(failure: Failure) {
-        when (failure) {
-            is AuthFailure.EmptyCredentials ->
-                displayError("The email and password fields can't be empty")
-            is AuthFailure.BadEmail ->
-                displayError("The email is invalid")
-            is AuthFailure.InvalidCredentials ->
-                displayError("Invalid Credentials")
-            is AuthFailure.InvalidUser ->
-                displayError("This email is not registered to any account")
-            is AuthFailure.EmailTaken ->
-                displayError("The email is already in use")
-            is AuthFailure.CantRetrieveUser ->
-                displayError("There was a problem retrieving authentication information\n${failure.e}")
-            is AuthFailure.WeakPassword ->
-                displayError("${failure.reason}")
-            else ->
-                displayError("An unexpected error has occurred:\n${failure.e}")
+        failure.e?.printStackTrace()
+        val message = when (failure) {
+            is AuthFailure.EmptyCredentials -> getString(R.string.empty_credentials)
+            is AuthFailure.BadEmail -> getString(R.string.bad_email)
+            is AuthFailure.InvalidCredentials -> getString(R.string.invalid_credentials)
+            is AuthFailure.InvalidUser -> getString(R.string.invalid_email)
+            is AuthFailure.EmailTaken -> getString(R.string.email_taken)
+            is AuthFailure.CantRetrieveUser -> getString(R.string.user_retrieval_fail)
+            is AuthFailure.WeakPassword -> getString(R.string.weak_password)
+            else -> getString(R.string.unknown_error)
         }
+        displayError(message)
     }
 
     private fun displayError(message: String) {

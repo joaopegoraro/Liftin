@@ -4,9 +4,7 @@ import android.net.Uri
 import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.data.services.storage.StorageService
 import xyz.joaophp.liftin.utils.Either
-import xyz.joaophp.liftin.utils.Error
 import xyz.joaophp.liftin.utils.failures.Failure
-import xyz.joaophp.liftin.utils.failures.ImageFailure
 import java.util.*
 import javax.inject.Inject
 
@@ -18,12 +16,8 @@ class ImageRepositoryImpl @Inject constructor(
     private val path = fun(user: User): String = "images/${user.uid}/${UUID.randomUUID()}"
 
     override suspend fun saveImage(user: User, fileUri: Uri): Either<Failure, String> {
-        return try {
-            val uploadPath = path(user)
-            storageService.upload(uploadPath, fileUri)
-        } catch (e: Exception) {
-            Error(ImageFailure.FailedUpload(e))
-        }
+        val uploadPath = path(user)
+        return storageService.upload(uploadPath, fileUri)
     }
 
     override suspend fun getImage(imagePath: String): Either<Failure, ByteArray> {

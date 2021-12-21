@@ -20,7 +20,9 @@ import xyz.joaophp.liftin.ui.state.AppState
 import xyz.joaophp.liftin.ui.viewmodels.AppViewModel
 import xyz.joaophp.liftin.ui.viewmodels.HomeViewModel
 import xyz.joaophp.liftin.utils.failures.AuthFailure
+import xyz.joaophp.liftin.utils.failures.DatabaseFailure
 import xyz.joaophp.liftin.utils.failures.Failure
+import xyz.joaophp.liftin.utils.failures.WorkoutFailure
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -181,14 +183,20 @@ class HomeFragment : Fragment() {
     // Error handling
 
     private fun handleFailure(failure: Failure) {
-        when (failure) {
-            is AuthFailure.NoCurrentUser -> Unit
-            is AuthFailure.CantRetrieveUser -> {
-                displayMessage("There was a problem retrieving authentication information")
-                navigateToAuthFragment()
-            }
-            else -> displayMessage("An unexpected error has occurred\n" + failure.e)
+        failure.e?.printStackTrace()
+        val message = when (failure) {
+            is AuthFailure.NoCurrentUser -> return
+            is AuthFailure.CantRetrieveUser -> getString(R.string.user_retrieval_fail)
+            is WorkoutFailure.WrongModel -> getString(R.string.wrong_model)
+            is DatabaseFailure.Timeout -> getString(R.string.timeout)
+            is DatabaseFailure.InvalidQuery -> getString(R.string.invalid_query)
+            is DatabaseFailure.Unavailable -> getString(R.string.unavailable)
+            is DatabaseFailure.DataLost -> getString(R.string.data_lost)
+            is DatabaseFailure.Unauthorised -> getString(R.string.unauthorised)
+            is DatabaseFailure.NotFound -> getString(R.string.workouts_not_found)
+            else -> getString(R.string.unknown_error)
         }
+        displayMessage(message)
     }
 
     private fun displayMessage(message: String) {

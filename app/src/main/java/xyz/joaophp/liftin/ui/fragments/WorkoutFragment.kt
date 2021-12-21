@@ -22,7 +22,10 @@ import xyz.joaophp.liftin.ui.adapters.ExerciseAdapter
 import xyz.joaophp.liftin.ui.state.AppState
 import xyz.joaophp.liftin.ui.viewmodels.AppViewModel
 import xyz.joaophp.liftin.ui.viewmodels.WorkoutViewModel
+import xyz.joaophp.liftin.utils.failures.DatabaseFailure
+import xyz.joaophp.liftin.utils.failures.ExerciseFailure
 import xyz.joaophp.liftin.utils.failures.Failure
+import xyz.joaophp.liftin.utils.failures.StorageFailure
 
 @AndroidEntryPoint
 class WorkoutFragment : Fragment() {
@@ -146,6 +149,17 @@ class WorkoutFragment : Fragment() {
 
     private fun handleFailure(failure: Failure) {
         when (failure) {
+            is ExerciseFailure.WrongModel -> getString(R.string.wrong_model)
+            is StorageFailure.Unauthorised -> getString(R.string.unauthorised)
+            is StorageFailure.NotFound -> getString(R.string.image_deletion_fail)
+            is StorageFailure.Timeout -> getString(R.string.timeout)
+            is StorageFailure.LimitExceeded -> getString(R.string.download_limit_exceeded)
+            is DatabaseFailure.NotFound -> getString(R.string.exercises_not_found)
+            is DatabaseFailure.Timeout -> getString(R.string.timeout)
+            is DatabaseFailure.InvalidQuery -> getString(R.string.invalid_query)
+            is DatabaseFailure.Unavailable -> getString(R.string.unavailable)
+            is DatabaseFailure.DataLost -> getString(R.string.data_lost)
+            is DatabaseFailure.Unauthorised -> getString(R.string.unauthorised)
             else -> displayMessage("An unexpected error has occurred\n" + failure.e)
         }
     }

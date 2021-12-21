@@ -6,7 +6,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import xyz.joaophp.liftin.usecases.exercises.CreateExerciseUseCase
 import xyz.joaophp.liftin.usecases.exercises.CreateExerciseUseCaseImpl
-import xyz.joaophp.liftin.usecases.images.CreateImageUseCaseImpl
 
 @Module
 @InstallIn(SingletonComponent::class)

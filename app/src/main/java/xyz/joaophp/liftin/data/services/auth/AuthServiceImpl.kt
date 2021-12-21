@@ -69,7 +69,7 @@ class AuthServiceImpl @Inject constructor(
             when (e) {
                 // FirebaseAuthWeakPasswordException must come before
                 // FirebaseAuthInvalidCredentialsException because it inherits from it
-                is FirebaseAuthWeakPasswordException -> AuthFailure.WeakPassword(e.reason)
+                is FirebaseAuthWeakPasswordException -> AuthFailure.WeakPassword
                 is FirebaseAuthInvalidCredentialsException -> AuthFailure.InvalidCredentials
                 is FirebaseAuthInvalidUserException -> AuthFailure.InvalidUser
                 is FirebaseAuthUserCollisionException -> AuthFailure.EmailTaken

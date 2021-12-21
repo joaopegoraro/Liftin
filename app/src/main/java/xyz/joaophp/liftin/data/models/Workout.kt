@@ -9,7 +9,7 @@ data class Workout(
 ) : Model() {
 
     companion object {
-        fun fromMap(map: Map<String, Any>): Model {
+        fun fromMap(map: Map<String, Any>): Workout {
             try {
                 return Workout(
                     nome = map["nome"] as Number,

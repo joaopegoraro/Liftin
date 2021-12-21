@@ -36,8 +36,9 @@ class ExerciseRepositoryImpl @Inject constructor(
                 either.fold(
                     ifError = { Error(it) },
                     ifSuccess = { list ->
+                        // Convert HashMap list from Firestore to Exercise list
                         val exercises = list?.map { hashMap ->
-                            hashMap?.let { Exercise.fromMap(it) as Exercise }
+                            hashMap?.let { Exercise.fromMap(it)}
                         }
                         Success(exercises)
                     }

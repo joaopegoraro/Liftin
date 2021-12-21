@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,15 +19,14 @@ import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import xyz.joaophp.liftin.R
 import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.data.models.Workout
 import xyz.joaophp.liftin.databinding.FragmentAddExerciseBinding
 import xyz.joaophp.liftin.ui.state.AppState
 import xyz.joaophp.liftin.ui.viewmodels.AddExerciseViewModel
 import xyz.joaophp.liftin.ui.viewmodels.AppViewModel
-import xyz.joaophp.liftin.utils.failures.Failure
-import xyz.joaophp.liftin.utils.failures.ImageFailure
-import xyz.joaophp.liftin.utils.failures.WorkoutFailure
+import xyz.joaophp.liftin.utils.failures.*
 
 
 @AndroidEntryPoint
@@ -51,14 +49,17 @@ class AddExerciseFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Request permission INTENT
         requestPermission =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
                     getContent.launch("image/*")
                 } else {
-                    displayMessage("You need to give permission for access to the gallery")
+                    handleFailure(ImageFailure.PermissionNeeded)
                 }
             }
+
+        // Get Image file INTENT
         getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { contentUri ->
             if (contentUri == null) {
                 handleFailure(ImageFailure.EmptyUri)
@@ -126,7 +127,7 @@ class AddExerciseFragment : Fragment() {
             binding?.root?.alpha = 1f // opacity goes back to normal
             binding?.loading?.hide()
 
-            return handleFailure(WorkoutFailure.EmptyFields)
+            return handleFailure(ExerciseFailure.EmptyFields)
         }
 
         // Create exercise
@@ -135,7 +136,6 @@ class AddExerciseFragment : Fragment() {
                 viewModel.createImage(user, uri).foldAsync(
                     ifError = { failure -> handleFailure(failure) },
                     ifSuccess = { path ->
-                        Log.d("TESTE", path)
                         viewModel.createExercise(
                             user,
                             workout,
@@ -148,7 +148,9 @@ class AddExerciseFragment : Fragment() {
                         )
                     }
                 )
+                return@launchWhenCreated
             }
+            handleFailure(ImageFailure.EmptyField)
         }
 
         // Hide loading animation
@@ -178,12 +180,25 @@ class AddExerciseFragment : Fragment() {
     // Handle errors
 
     private fun handleFailure(failure: Failure) {
-        when (failure) {
-            else -> {
-                failure.e?.printStackTrace()
-                displayMessage("An unknown error has happened.\nContact the developer.")
-            }
+        failure.e?.printStackTrace()
+        val message = when (failure) {
+            is ExerciseFailure.WrongModel -> getString(R.string.wrong_model)
+            is ExerciseFailure.EmptyFields -> getString(R.string.exercise_empty_fields)
+            is ImageFailure.EmptyField -> getString(R.string.image_empty_field)
+            is ImageFailure.PermissionNeeded -> getString(R.string.permission_needed)
+            is ImageFailure.EmptyUri -> getString(R.string.gallery_upload_fail)
+            is StorageFailure.Unauthorised -> getString(R.string.unauthorised)
+            is StorageFailure.Timeout -> getString(R.string.timeout)
+            is StorageFailure.LimitExceeded -> getString(R.string.upload_limit_exceeded)
+            is DatabaseFailure.InvalidQuery -> getString(R.string.invalid_query)
+            is DatabaseFailure.Timeout -> getString(R.string.timeout)
+            is DatabaseFailure.Unauthorised -> getString(R.string.unauthorised)
+            is DatabaseFailure.DocumentAlreadyExists -> getString(R.string.exercise_already_exists)
+            is DatabaseFailure.Unavailable -> getString(R.string.unavailable)
+            is DatabaseFailure.DataLost -> getString(R.string.data_lost)
+            else -> getString(R.string.unknown_error)
         }
+        displayMessage(message)
     }
 
     private fun displayMessage(message: String) {

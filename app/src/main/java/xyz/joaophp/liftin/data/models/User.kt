@@ -7,7 +7,7 @@ data class User(
 ) : Model() {
 
     companion object {
-        fun fromMap(map: Map<String, Any>): Model {
+        fun fromMap(map: Map<String, Any>): User {
             try {
                 return User(uid = map["uid"] as String)
             } catch (e: Exception) {
