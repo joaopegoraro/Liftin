@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import xyz.joaophp.liftin.MainActivity
 import xyz.joaophp.liftin.R
 import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.data.models.Workout
@@ -80,6 +81,11 @@ class AddExerciseFragment : Fragment() {
     ): View? {
         binding = FragmentAddExerciseBinding.inflate(inflater, container, false)
 
+        // Handle Up button
+        (requireActivity() as MainActivity).setOnBackPressedListener {
+            navigateToWorkoutFragment()
+        }
+
         // Add Image button listener
         binding?.btnAddImage?.setOnClickListener { getImageFromGallery() }
 
@@ -139,7 +145,7 @@ class AddExerciseFragment : Fragment() {
                                 path
                             ).fold(
                                 ifError = { failure -> handleFailure(failure) },
-                                ifSuccess = { navigateToHomeFragment() }
+                                ifSuccess = { navigateToWorkoutFragment() }
                             )
                         }
                     )
@@ -169,7 +175,7 @@ class AddExerciseFragment : Fragment() {
 
     // Navigation methods
 
-    private fun navigateToHomeFragment() {
+    private fun navigateToWorkoutFragment() {
         appViewModel.updateState(AppState.InWorkout(user, workout))
         findNavController().navigateUp()
     }

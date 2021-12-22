@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import xyz.joaophp.liftin.MainActivity
 import xyz.joaophp.liftin.R
 import xyz.joaophp.liftin.data.models.Exercise
 import xyz.joaophp.liftin.data.models.User
@@ -56,6 +57,11 @@ class WorkoutFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentWorkoutBinding.inflate(inflater, container, false)
+
+        // Handle Up button
+        (requireActivity() as MainActivity).setOnBackPressedListener {
+            navigateToHomeFragment()
+        }
 
         // Set up workout list adapter
         val exerciseAdapter = ExerciseAdapter()
@@ -138,6 +144,11 @@ class WorkoutFragment : Fragment() {
     }
 
     // Navigation methods
+
+    private fun navigateToHomeFragment() {
+        appViewModel.updateState(AppState.InHome(user))
+        findNavController().navigateUp()
+    }
 
     private fun navigateToExerciseFragment(exercise: Exercise) {
         appViewModel.updateState(AppState.InExercise(user, workout, exercise))

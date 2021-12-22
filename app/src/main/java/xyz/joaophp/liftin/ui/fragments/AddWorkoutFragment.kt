@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import xyz.joaophp.liftin.MainActivity
 import xyz.joaophp.liftin.R
 import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.databinding.FragmentAddWorkoutBinding
@@ -49,6 +50,11 @@ class AddWorkoutFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddWorkoutBinding.inflate(inflater, container, false)
+
+        // Handle Up button
+        (requireActivity() as MainActivity).setOnBackPressedListener {
+            navigateToHomeFragment()
+        }
 
         // Fab click listener
         binding?.fab?.setOnClickListener { createWorkout() }

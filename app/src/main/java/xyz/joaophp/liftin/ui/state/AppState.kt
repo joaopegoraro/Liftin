@@ -4,11 +4,11 @@ import xyz.joaophp.liftin.data.models.Exercise
 import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.data.models.Workout
 
-sealed class AppState(user: User? = null) {
+sealed class AppState {
     object InAuth : AppState()
-    class InHome(val user: User) : AppState(user)
-    class InAddWorkout(val user: User) : AppState(user)
-    class InWorkout(val user: User, val workout: Workout) : AppState(user)
-    class InAddExercise(val user: User, val workout: Workout) : AppState(user)
-    class InExercise(val user: User, val workout: Workout, val exercise: Exercise) : AppState(user)
+    class InHome(val user: User) : AppState()
+    class InAddWorkout(val user: User) : AppState()
+    class InWorkout(val user: User, val workout: Workout) : AppState()
+    class InAddExercise(val user: User, val workout: Workout) : AppState()
+    class InExercise(val user: User, val workout: Workout, val exercise: Exercise) : AppState()
 }

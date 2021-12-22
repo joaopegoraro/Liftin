@@ -40,15 +40,6 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Check authentication
-        viewModel.getUser().fold(
-            ifError = { failure ->
-                handleFailure(failure)
-                navigateToAuthFragment()
-            },
-            ifSuccess = { user -> appViewModel.updateState(AppState.InHome(user)) }
-        )
-
         // Handle state
         lifecycleScope.launchWhenCreated {
             appViewModel.appState.collect { state -> handleState(state) }
@@ -61,6 +52,17 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+
+        runBlocking {
+            // Check authentication
+            viewModel.getUser().fold(
+                ifError = { failure ->
+                    handleFailure(failure)
+                    navigateToAuthFragment()
+                },
+                ifSuccess = { user -> appViewModel.updateState(AppState.InHome(user)) }
+            )
+        }
 
         // Set up workout list adapter
         val workoutAdapter = WorkoutAdapter()

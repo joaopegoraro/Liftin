@@ -2,6 +2,7 @@ package xyz.joaophp.liftin.ui.fragments
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -11,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import xyz.joaophp.liftin.MainActivity
 import xyz.joaophp.liftin.R
 import xyz.joaophp.liftin.data.models.Exercise
 import xyz.joaophp.liftin.data.models.User
@@ -54,6 +56,11 @@ class ExerciseFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentExerciseBinding.inflate(inflater, container, false)
+
+        // Handle Up button
+        (requireActivity() as MainActivity).setOnBackPressedListener {
+            navigateToWorkoutFragment()
+        }
 
         // Bind exercise information to screen elements
         binding?.apply {
