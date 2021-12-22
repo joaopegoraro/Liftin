@@ -2,13 +2,13 @@ package xyz.joaophp.liftin.ui.fragments
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionInflater
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -48,6 +48,10 @@ class ExerciseFragment : Fragment() {
         lifecycleScope.launchWhenCreated {
             appViewModel.appState.collect { state -> handleState(state) }
         }
+
+        // Navigation transition
+        val inflater = TransitionInflater.from(requireContext())
+        enterTransition = inflater.inflateTransition(R.transition.slide_down)
     }
 
     override fun onCreateView(

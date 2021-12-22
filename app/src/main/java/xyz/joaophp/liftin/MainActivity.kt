@@ -9,7 +9,7 @@ class MainActivity : AppCompatActivity() {
 
     private var onBackPressedListener: (() -> Unit)? = null
 
-    fun setOnBackPressedListener(listener: () -> Unit) {
+    fun setOnBackPressedListener(listener: (() -> Unit)?) {
         onBackPressedListener = listener
     }
 

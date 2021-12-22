@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionInflater
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import xyz.joaophp.liftin.R
@@ -30,6 +31,14 @@ class AuthFragment : Fragment() {
     private val viewModel: AuthViewModel by viewModels()
 
     // Lifecycle methods
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Navigation transition
+        val inflater = TransitionInflater.from(requireContext())
+        enterTransition = inflater.inflateTransition(R.transition.slide_left)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

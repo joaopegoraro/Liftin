@@ -12,6 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
+import xyz.joaophp.liftin.MainActivity
 import xyz.joaophp.liftin.R
 import xyz.joaophp.liftin.data.models.User
 import xyz.joaophp.liftin.data.models.Workout
@@ -52,6 +53,9 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+
+        // Handle Up button
+        (requireActivity() as MainActivity).setOnBackPressedListener(null)
 
         runBlocking {
             // Check authentication
